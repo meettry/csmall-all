@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.mall.order.mapper.OmsOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.tedu.mall.pojo.order.model.OmsOrder">
+        <id column="id" property="id" />
+        <result column="sn" property="sn" />
+        <result column="user_id" property="userId" />
+        <result column="contact_name" property="contactName" />
+        <result column="mobile_phone" property="mobilePhone" />
+        <result column="telephone" property="telephone" />
+        <result column="province_code" property="provinceCode" />
+        <result column="province_name" property="provinceName" />
+        <result column="city_code" property="cityCode" />
+        <result column="city_name" property="cityName" />
+        <result column="district_code" property="districtCode" />
+        <result column="district_name" property="districtName" />
+        <result column="street_code" property="streetCode" />
+        <result column="street_name" property="streetName" />
+        <result column="detailed_address" property="detailedAddress" />
+        <result column="tag" property="tag" />
+        <result column="payment_type" property="paymentType" />
+        <result column="state" property="state" />
+        <result column="reward_point" property="rewardPoint" />
+        <result column="amount_of_original_price" property="amountOfOriginalPrice" />
+        <result column="amount_of_freight" property="amountOfFreight" />
+        <result column="amount_of_discount" property="amountOfDiscount" />
+        <result column="amount_of_actual_pay" property="amountOfActualPay" />
+        <result column="gmt_order" property="gmtOrder" />
+        <result column="gmt_pay" property="gmtPay" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+    </resultMap>
+
+</mapper>
