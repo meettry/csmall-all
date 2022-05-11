@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface IForFrontCategoryService {
     /**
-     * 全亮查询商品分类列表
+     * 全量查询商品分类列表
      * @return
      */
     List<CategoryStandardVO> getCategoryList();

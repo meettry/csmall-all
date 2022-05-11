@@ -18,4 +18,8 @@ import java.util.List;
 public class FrontCategoryTreeVO<T> implements Serializable {
     @ApiModelProperty(value="分类列表,包含下级分类")
     private List<T> categories;
+
+
+
+
 }
