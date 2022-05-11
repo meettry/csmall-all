@@ -79,6 +79,7 @@ public class FrontCategoryServiceImpl implements IFrontCategoryService {
                 // 如果不是存在.证明不是父级分类,不是父级分类就一定可以绑定到另一个父级分类中
                 map.get(parentId).add(frontCategoryEntity);
             }
+
         }
         log.info("当前map数据包含父级id的个数:{}",map.size());
         // 上面的循环完成后我们只能获得所有父级分类包含哪些子分类
