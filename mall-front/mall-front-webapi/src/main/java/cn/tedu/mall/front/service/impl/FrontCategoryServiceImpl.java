@@ -74,7 +74,7 @@ public class FrontCategoryServiceImpl implements IFrontCategoryService {
                 // 如果是不存在,表示当前对象是父级分类,先实例化一个List,再保存在Map中
                 List<FrontCategoryEntity> value=new ArrayList<>();
                 value.add(frontCategoryEntity);
-                map.put(frontCategoryEntity.getId(),value);
+                map.put(parentId,value);
             }else{
                 // 如果不是存在.证明不是父级分类,不是父级分类就一定可以绑定到另一个父级分类中
                 map.get(parentId).add(frontCategoryEntity);
