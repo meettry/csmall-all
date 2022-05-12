@@ -3,6 +3,7 @@ package cn.tedu.mall.front.service.impl;
 import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.front.service.IFrontProductService;
 import cn.tedu.mall.pojo.product.vo.*;
+import cn.tedu.mall.product.service.front.IForFrontAttributeService;
 import cn.tedu.mall.product.service.front.IForFrontSkuService;
 import cn.tedu.mall.product.service.front.IForFrontSpuService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -17,6 +18,8 @@ public class FrontProductServiceImpl implements IFrontProductService {
     private IForFrontSpuService dubboSpuService;
     @DubboReference
     private IForFrontSkuService dubboSkuService;
+    @DubboReference
+    private IForFrontAttributeService dubboAttributeService;
 
     @Override
     public JsonPage<SpuListItemVO> listSpuByCategoryId(Long categoryId, Integer page, Integer pageSize) {
@@ -52,8 +55,13 @@ public class FrontProductServiceImpl implements IFrontProductService {
         return spuDetailStandardVO;
     }
 
+    // 根据spuid查询所有参数类型的方法
     @Override
     public List<AttributeStandardVO> getSpuAttributesBySpuId(Long spuId) {
-        return null;
+        // dubbo调用product模块提供的根据spuid查询参数详情的方法(有一个比较复杂的sql语句)
+        // 要知道这个sql语句中表之间的关系
+        List<AttributeStandardVO> list=dubboAttributeService
+                                            .getSpuAttributesBySpuId(spuId);
+        return list;
     }
 }
