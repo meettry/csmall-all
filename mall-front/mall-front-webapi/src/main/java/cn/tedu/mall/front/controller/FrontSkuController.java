@@ -35,5 +35,5 @@ public class FrontSkuController {
         return JsonResult.ok(list);
     }
 
-
 }
+
