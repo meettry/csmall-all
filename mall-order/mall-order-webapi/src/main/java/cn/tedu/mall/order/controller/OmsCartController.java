@@ -53,10 +53,29 @@ public class OmsCartController {
     ){
         JsonPage<CartStandardVO> jsonPage=cartService.listCarts(page,pageSize);
         return JsonResult.ok(jsonPage);
-
-
     }
 
+
+    // 根据用户指定的购物车id删除购物车信息(支持批量)
+    @PostMapping("/delete/")
+    @ApiOperation("根据用户指定的购物车id删除购物车信息(支持批量)")
+    @ApiImplicitParams(
+            @ApiImplicitParam(value = "指定购物车id",name="ids",required = true,dataType = "array")
+    )
+    @PreAuthorize("hasRole('ROLE_user')")
+    public JsonResult removeCartByIds(Long[] ids){
+        cartService.removeCart(ids);
+        return JsonResult.ok();
+    }
+
+    // 根据用户id清空该用户购物车列表
+    @PostMapping("/delete/all")
+    @ApiOperation("根据用户id清空该用户购物车列表")
+    @PreAuthorize("hasRole('ROLE_user')")
+    public JsonResult removeCartsByUserId(){
+        cartService.removeAllCarts();
+        return JsonResult.ok("您的购物车已经清空!");
+    }
 
 
 

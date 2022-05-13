@@ -77,6 +77,28 @@
         where
             user_id=#{id}
     </select>
+    <!-- 根据id删除购物车商品的方法  -->
+    <delete id="deleteCartsByIds">
+        delete from
+        oms_cart
+        where
+        id in
+        <foreach collection="ids" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+
+    <delete id="deleteCartsByUserId">
+        delete from
+            oms_cart
+        where
+            user_id=#{userId}
+    </delete>
 
 
 </mapper>
+
+
+
+
