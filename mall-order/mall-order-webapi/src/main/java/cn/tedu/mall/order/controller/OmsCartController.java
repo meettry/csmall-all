@@ -1,16 +1,19 @@
 package cn.tedu.mall.order.controller;
 
+import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.common.restful.JsonResult;
 import cn.tedu.mall.order.service.IOmsCartService;
+import cn.tedu.mall.order.utils.WebConsts;
 import cn.tedu.mall.pojo.order.dto.CartAddDTO;
+import cn.tedu.mall.pojo.order.vo.CartStandardVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/oms/cart")
@@ -35,6 +38,30 @@ public class OmsCartController {
     // value:  Beaer [复制的jwt]
     // 然后要刷新10005的knife4j页面
     // 就可以发送新增到购物车的请求了
+
+    // 根据登录用户id查询购物信息的方法
+    @GetMapping("/list")
+    @ApiOperation("根据登录用户id查询购物信息的方法")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "页码",name="page",required = true,dataType = "int"),
+            @ApiImplicitParam(value = "每页条数",name="pageSize",required = true,dataType = "int")
+    })
+    @PreAuthorize("hasRole('ROLE_user')")
+    public JsonResult<JsonPage<CartStandardVO>> listCart(
+        @RequestParam(required = false,defaultValue = WebConsts.DEFAULT_PAGE) Integer page,
+        @RequestParam(required = false,defaultValue = WebConsts.DEFAULT_PAGE_SIZE) Integer pageSize
+    ){
+        JsonPage<CartStandardVO> jsonPage=cartService.listCarts(page,pageSize);
+        return JsonResult.ok(jsonPage);
+
+
+    }
+
+
+
+
+
+
 
 }
 

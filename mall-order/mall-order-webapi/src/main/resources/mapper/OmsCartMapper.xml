@@ -68,6 +68,15 @@
         where
             id=#{id}
     </update>
+    <!-- 根据用户id查询用户的购物车信息 -->
+    <select id="selectCartsByUserId" resultType="cn.tedu.mall.pojo.order.vo.CartStandardVO">
+        select
+            <include refid="SimpleQueryFields" />
+        from
+            oms_cart
+        where
+            user_id=#{id}
+    </select>
 
 
 </mapper>
