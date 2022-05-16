@@ -58,10 +58,7 @@ public class OrderListVO implements Serializable {
     @ApiModelProperty(value="实际支付")
     private BigDecimal amountOfActualPay;
 
-    /**
-     * 订单商品列表
-     */
-    private List<OrderItemListVO> orderItems;
+
 
     /**
      * 下单时间
@@ -87,4 +84,9 @@ public class OrderListVO implements Serializable {
     @ApiModelProperty(value="修改时间")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime gmtModified;
+
+    /**
+     * 订单商品列表
+     */
+    private List<OrderItemListVO> orderItems;
 }
