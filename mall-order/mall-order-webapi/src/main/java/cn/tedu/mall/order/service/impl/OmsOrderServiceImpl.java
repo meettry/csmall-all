@@ -13,6 +13,7 @@ import cn.tedu.mall.pojo.order.dto.OrderAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderItemAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderListTimeDTO;
 import cn.tedu.mall.pojo.order.dto.OrderStateUpdateDTO;
+import cn.tedu.mall.pojo.order.model.OmsCart;
 import cn.tedu.mall.pojo.order.model.OmsOrder;
 import cn.tedu.mall.pojo.order.model.OmsOrderItem;
 import cn.tedu.mall.pojo.order.vo.OrderAddVO;
@@ -20,6 +21,7 @@ import cn.tedu.mall.pojo.order.vo.OrderDetailVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
 import cn.tedu.mall.product.service.order.IForOrderSkuService;
 import io.seata.spring.annotation.GlobalTransactional;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -80,13 +82,41 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
             loadOrderItem(omsOrderItem);
             // 赋值订单id
             omsOrderItem.setOrderId(omsOrder.getId());
-
             // 将补充好属性的OmsOrderItem对象添加到omsOrderItems集合中
+            omsOrderItems.add(omsOrderItem);
             // 减少库存数
+            // 获得skuId
+            Long skuId=omsOrderItem.getSkuId();
+            // 获得商品数量
+            Integer quantity=omsOrderItem.getQuantity();
+            // dubbo调用减少库存的方法
+            int result=dubboSkuService.reduceStockNum(skuId,quantity);
+            // result是减少库存方法执行后影响数据库的行数,如果是0,表示没有数据变化,一般是库存不足导致的
+            if(result==0){
+                log.warn("商品skuId:{},库存不足",skuId);
+                // 抛出异常,Seata回滚
+                throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"库存不足");
+            }
             // 删除购物车中信息
+            OmsCart omsCart=new OmsCart();
+            omsCart.setSkuId(skuId);
+            omsCart.setUserId(omsOrder.getUserId());
+            cartService.removeUserCarts(omsCart);
         }
-
-        return null;
+        // 执行将所有订单中商品新增到oms_order_item表中的操作
+        orderItemMapper.insertOrderItems(omsOrderItems);
+        // 新增生成好的订单到oms_order表
+        orderMapper.insertOrder(omsOrder);
+        // 到此为止,新增完成了
+        // 下面要完成用户生成订单预览页面,这个页面中大部分信息可以前端自己处理
+        // 我们需要将一些有后端生成的代码发送给前端,这个类是OrderAddVO
+        OrderAddVO addVO=new OrderAddVO();
+        addVO.setId(omsOrder.getId());
+        addVO.setSn(omsOrder.getSn());
+        addVO.setCreateTime(omsOrder.getGmtCreate());
+        addVO.setPayAmount(omsOrder.getAmountOfActualPay());
+        // 别忘了将生成的信息返回!!!
+        return addVO;
     }
 
     private void loadOrderItem(OmsOrderItem omsOrderItem) {
