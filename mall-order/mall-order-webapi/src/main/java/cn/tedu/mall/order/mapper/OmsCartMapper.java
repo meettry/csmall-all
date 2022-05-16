@@ -29,5 +29,8 @@ public interface OmsCartMapper {
     // 按用户id清空该用户所有购物车内容
     int deleteCartsByUserId(Long userId);
 
+    // 根据用户id和skuid删除购物中信息
+    void deleteCartByUserIdAndSkuId(OmsCart omsCart);
+
 
 }

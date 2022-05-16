@@ -96,6 +96,16 @@
             user_id=#{userId}
     </delete>
 
+    <!--  根据userId和skuId删除购物车中的内容,准备生成订单 -->
+    <delete id="deleteCartByUserIdAndSkuId">
+        delete
+        from
+            oms_cart
+        where
+            sku_id=#{skuId}
+        and
+            user_id=#{userId}
+    </delete>
 
 </mapper>
 
