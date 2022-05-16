@@ -10,13 +10,16 @@ import cn.tedu.mall.order.service.IOmsCartService;
 import cn.tedu.mall.order.service.IOmsOrderService;
 import cn.tedu.mall.order.utils.IdGeneratorUtils;
 import cn.tedu.mall.pojo.order.dto.OrderAddDTO;
+import cn.tedu.mall.pojo.order.dto.OrderItemAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderListTimeDTO;
 import cn.tedu.mall.pojo.order.dto.OrderStateUpdateDTO;
 import cn.tedu.mall.pojo.order.model.OmsOrder;
+import cn.tedu.mall.pojo.order.model.OmsOrderItem;
 import cn.tedu.mall.pojo.order.vo.OrderAddVO;
 import cn.tedu.mall.pojo.order.vo.OrderDetailVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
 import cn.tedu.mall.product.service.order.IForOrderSkuService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -28,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @DubboService
@@ -45,6 +50,9 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
     @Autowired
     private IOmsCartService cartService;
 
+    // 当前生成订单的方法为分布式事务
+    // Seata保证整个业务逻辑层运行过程中的所有数据库操作要么都成功,要么都失败
+    @GlobalTransactional
     @Override
     public OrderAddVO addOrder(OrderAddDTO orderAddDTO) {
         // 首先先实例化能够新增到数据库的OmsOrder类
@@ -53,10 +61,46 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         BeanUtils.copyProperties(orderAddDTO,omsOrder);
         // 因为收集OmsOrder数据代码较多,所以我们单独编写一个方法实现
         loadOrder(omsOrder);
+        // 获得当前订单中所有商品的sku
+        List<OrderItemAddDTO> orderItemDTOs=orderAddDTO.getOrderItems();
+        if(orderItemDTOs==null|| orderItemDTOs.isEmpty()){
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"没有选中购物车中商品");
+        }
+        // 上面集合泛型为OrderItemAddDTO,但新增到数据库表的实体类为OmsOrderItem
+        // 所以实例化一个OmsOrderItem泛型集合,以备使用
+        List<OmsOrderItem> omsOrderItems=new ArrayList<>();
+        // 遍历当前订单用包含的所有商品的集合
+        for(OrderItemAddDTO orderItem : orderItemDTOs){
+            // 遍历操作目标
+            // 将OmsOrderItem需要但是OrderItemAddDTO没有的属性补充上
+            OmsOrderItem omsOrderItem=new OmsOrderItem();
+            // 同名属性赋值
+            BeanUtils.copyProperties(orderItem,omsOrderItem);
+            // 定义一个收集OrderItem属性的方法(代码不多,卸载这里也行,课程中仍然定义方法)
+            loadOrderItem(omsOrderItem);
+            // 赋值订单id
+            omsOrderItem.setOrderId(omsOrder.getId());
 
+            // 将补充好属性的OmsOrderItem对象添加到omsOrderItems集合中
+            // 减少库存数
+            // 删除购物车中信息
+        }
 
         return null;
     }
+
+    private void loadOrderItem(OmsOrderItem omsOrderItem) {
+        // 判断id并赋值
+        if(omsOrderItem.getId()==null){
+            Long id=IdGeneratorUtils.getDistributeId("order_item");
+            omsOrderItem.setId(id);
+        }
+        // 商品没有skuid的抛异常Seata会回滚
+        if (omsOrderItem.getSkuId()==null){
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"订单中商品不能缺失SKU");
+        }
+    }
+
     // 生成订单方法中需要的方法,能够将omsOrder对象中可能为空的数据赋值
     private void loadOrder(OmsOrder omsOrder) {
         // 判断出id是否为空
