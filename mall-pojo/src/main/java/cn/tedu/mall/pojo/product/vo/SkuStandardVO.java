@@ -57,7 +57,7 @@ public class SkuStandardVO implements Serializable {
      * 组图URLs，使用JSON格式表示
      */
     @ApiModelProperty(value = "组图URL", position = 8)
-    @JsonRawValue
+    //@JsonRawValue
     private String pictures;
 
     /**
