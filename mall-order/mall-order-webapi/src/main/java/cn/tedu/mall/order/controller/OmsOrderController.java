@@ -5,6 +5,7 @@ import cn.tedu.mall.common.restful.JsonResult;
 import cn.tedu.mall.order.service.IOmsOrderService;
 import cn.tedu.mall.pojo.order.dto.OrderAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderListTimeDTO;
+import cn.tedu.mall.pojo.order.dto.OrderStateUpdateDTO;
 import cn.tedu.mall.pojo.order.vo.OrderAddVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
 import io.swagger.annotations.Api;
@@ -43,7 +44,14 @@ public class OmsOrderController {
         return JsonResult.ok(orderListVOs);
     }
 
-
+    // 修改订单状态的方法
+    @PostMapping("/update/state")
+    @ApiOperation("修改订单状态的方法")
+    @PreAuthorize("hasRole('ROLE_user')")
+    public JsonResult updateOrderState(OrderStateUpdateDTO orderStateUpdateDTO){
+        orderService.updateOrderState(orderStateUpdateDTO);
+        return JsonResult.ok();
+    }
 
 }
 

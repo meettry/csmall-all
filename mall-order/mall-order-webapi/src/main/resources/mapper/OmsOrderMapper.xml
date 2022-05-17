@@ -160,9 +160,6 @@
             <if test="telephone!=null">
                 telephone=#{telephone},
             </if>
-            <if test="telephone!=null">
-                telephone=#{telephone},
-            </if>
             <if test="streetCode!=null">
                 street_code=#{streetCode},
             </if>

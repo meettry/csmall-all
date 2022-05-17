@@ -198,9 +198,14 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         }
     }
 
+    // 修改订单状态的业务逻辑层
     @Override
     public void updateOrderState(OrderStateUpdateDTO orderStateUpdateDTO) {
-
+        // OrderStateUpdateDTO参数只有id和state俩个属性,支持SpringValidation验证
+        OmsOrder omsOrder=new OmsOrder();
+        BeanUtils.copyProperties(orderStateUpdateDTO,omsOrder);
+        // 这里运行的修改只能是按id修改订单状态
+        orderMapper.updateOrderById(omsOrder);
     }
 
     // 查询当前登录用户在指定时间范围内(默认一个月内)所有订单
