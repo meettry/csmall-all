@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@Document(indexName = "cool_shark_mall_index")
+@Document(indexName = "cool_shark_mall_index2")
 @ApiModel(value="对应搜索的文档entity")
 public class SpuForElastic implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -211,24 +211,5 @@ public class SpuForElastic implements Serializable {
     @ApiModelProperty(value="审核⼈（冗余）")
     private String checkUser;
 
-    /**
-     * 审核通过时间（冗余）
-     */
-    @Field(name="gmt_check")
-    @ApiModelProperty(value="审核通过时间（冗余）")
-    private LocalDateTime gmtCheck;
 
-    /**
-     * 数据创建时间
-     */
-    @Field(name="gmt_create")
-    @ApiModelProperty(value="数据创建时间")
-    private LocalDateTime gmtCreate;
-
-    /**
-     * 数据最后修改时间
-     */
-    @Field(name="gmt_modified")
-    @ApiModelProperty(value="数据最后修改时间")
-    private LocalDateTime gmtModified;
 }

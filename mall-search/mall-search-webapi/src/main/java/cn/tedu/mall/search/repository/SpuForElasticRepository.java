@@ -13,13 +13,14 @@ public interface SpuForElasticRepository
     @Query("{\n" +
             "    \"bool\": {\n" +
             "      \"should\": [\n" +
-            "        { \"match\": { \"name\": \"手机\"}},\n" +
-            "        { \"match\": { \"title\": \"手机\"}},\n" +
-            "        { \"match\": { \"description\": \"手机\"}},\n" +
-            "        { \"match\": { \"category_name\": \"手机\"}}\n" +
+            "        { \"match\": { \"name\": \"?0\"}},\n" +
+            "        { \"match\": { \"title\": \"?0\"}},\n" +
+            "        { \"match\": { \"description\": \"?0\"}},\n" +
+            "        { \"match\": { \"category_name\": \"?0\"}}\n" +
             "        ]\n" +
             "     }\n" +
             "}")
-    Iterable<SpuForElastic> querySearch();
+    Iterable<SpuForElastic> querySearch(
+            String name);
 
 }
