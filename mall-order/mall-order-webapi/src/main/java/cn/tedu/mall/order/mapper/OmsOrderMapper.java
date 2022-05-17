@@ -15,4 +15,7 @@ public interface OmsOrderMapper {
     // 查询当前用户在指定时间内的所有订单
     List<OrderListVO> selectOrdersBetweenTimes(OrderListTimeDTO orderListTimeDTO);
 
+    // 动态sql,按订单id修改各列的值
+    void updateOrderById(OmsOrder omsOrder);
+
 }

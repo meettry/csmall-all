@@ -146,7 +146,61 @@
         ORDER BY oo.gmt_modified DESC
     </select>
 
-
-
+    <!-- 动态sql生成修改OmsOrder对象的修改方法    -->
+    <!-- <set></set>的功能有两个,第一是生成set关键字,第二能够将<set></set>区域中最后一个","去掉  -->
+    <update id="updateOrderById">
+        update oms_order
+        <set>
+            <if test="contactName!=null">
+                contact_name=#{contactName},
+            </if>
+            <if test="mobilePhone!=null">
+                mobile_phone=#{mobilePhone},
+            </if>
+            <if test="telephone!=null">
+                telephone=#{telephone},
+            </if>
+            <if test="telephone!=null">
+                telephone=#{telephone},
+            </if>
+            <if test="streetCode!=null">
+                street_code=#{streetCode},
+            </if>
+            <if test="streetName!=null">
+                street_name=#{streetName},
+            </if>
+            <if test="detailedAddress!=null">
+                detailed_address=#{detailedAddress},
+            </if>
+            <if test="tag!=null">
+                tag=#{tag},
+            </if>
+            <if test="paymentType!=null">
+                payment_type=#{paymentType},
+            </if>
+            <if test="state!=null">
+                state=#{state},
+            </if>
+            <if test="rewardPoint!=null">
+                reward_point=#{rewardPoint},
+            </if>
+            <if test="amountOfOriginalPrice!=null">
+                amount_of_original_price=#{amountOfOriginalPrice},
+            </if>
+            <if test="amountOfFreight!=null">
+                amount_of_freight=#{amountOfFreight},
+            </if>
+            <if test="amountOfDiscount!=null">
+                amount_of_discount=#{amountOfDiscount},
+            </if>
+            <if test="amountOfActualPay!=null">
+                amount_of_actual_pay=#{amountOfActualPay},
+            </if>
+            <if test="gmtPay!=null">
+                gmt_pay=#{gmtPay},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
 
 </mapper>
