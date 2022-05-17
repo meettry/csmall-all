@@ -1,9 +1,11 @@
 package cn.tedu.mall.product.service.front;
 
 import cn.tedu.mall.common.restful.JsonPage;
+import cn.tedu.mall.pojo.product.model.Spu;
 import cn.tedu.mall.pojo.product.vo.SpuDetailStandardVO;
 import cn.tedu.mall.pojo.product.vo.SpuListItemVO;
 import cn.tedu.mall.pojo.product.vo.SpuStandardVO;
+import cn.tedu.mall.pojo.search.entity.SpuForElastic;
 
 public interface IForFrontSpuService {
     /**
@@ -28,4 +30,14 @@ public interface IForFrontSpuService {
      * @return
      */
     SpuDetailStandardVO getSpuDetailById(Long spuId);
+
+    /**
+     * 分页查询所有spu信息
+     * @param pageNum PageSize
+     * @return 一页spu信息
+     */
+    JsonPage<Spu> getSpuByPage(Integer pageNum,Integer pageSize);
+
+
+
 }

@@ -48,7 +48,7 @@ public class OmsOrderController {
     @PostMapping("/update/state")
     @ApiOperation("修改订单状态的方法")
     @PreAuthorize("hasRole('ROLE_user')")
-    public JsonResult updateOrderState(OrderStateUpdateDTO orderStateUpdateDTO){
+    public JsonResult updateOrderState(@Validated OrderStateUpdateDTO orderStateUpdateDTO){
         orderService.updateOrderState(orderStateUpdateDTO);
         return JsonResult.ok();
     }

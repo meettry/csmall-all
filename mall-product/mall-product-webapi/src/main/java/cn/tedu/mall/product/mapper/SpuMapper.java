@@ -5,7 +5,9 @@ import cn.tedu.mall.pojo.product.query.SpuQuery;
 import cn.tedu.mall.pojo.product.vo.SpuListItemVO;
 import cn.tedu.mall.pojo.product.vo.SpuStandardVO;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -116,6 +118,11 @@ public interface SpuMapper {
      * @return SPU列表，如果没有匹配的数据，将返回长度为0的列表
      */
     List<SpuListItemVO> listByCustomCondition(SpuQuery spuQuery);
+
+
+    // 全查所有spu
+    @Select("select * from pms_spu")
+    List<Spu> findAllList();
 
 
 }

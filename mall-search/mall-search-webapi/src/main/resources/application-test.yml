@@ -13,7 +13,7 @@ spring:
         server-addr: http://${my.server.addr}:8848
   elasticsearch:
     rest:
-      uris: http://${my.server.addr}:9200
+      uris: http://localhost:9200
   redis:
     host: ${my.server.addr}
     port: 6379
