@@ -3,6 +3,7 @@ package cn.tedu.mall.product.service;
 import cn.tedu.mall.common.exception.CoolSharkServiceException;
 import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.common.restful.ResponseCode;
+import cn.tedu.mall.pojo.product.model.Spu;
 import cn.tedu.mall.pojo.product.query.SpuQuery;
 import cn.tedu.mall.pojo.product.vo.SpuDetailStandardVO;
 import cn.tedu.mall.pojo.product.vo.SpuListItemVO;
@@ -53,4 +54,16 @@ public class ForFrontSpuServiceImpl implements IForFrontSpuService {
         SpuDetailStandardVO spuDetailStandardVO = spuDetailMapper.getBySpuId(spuId);
         return spuDetailStandardVO;
     }
+
+    @Override
+    public JsonPage<Spu> getSpuByPage(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Spu> list=spuMapper.findAllList();
+        return JsonPage.restPage(new PageInfo<>(list));
+    }
 }
+
+
+
+
+

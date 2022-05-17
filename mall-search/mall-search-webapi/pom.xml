@@ -16,6 +16,11 @@
             <artifactId>mall-search-service</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.tedu.mall</groupId>
+            <artifactId>mall-product-service</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- Spring Boot Web：WEB应用 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
