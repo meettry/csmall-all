@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+//@Service
 @Slf4j
 public class SearchLocalServiceImpl implements ISearchService {
     @Autowired
