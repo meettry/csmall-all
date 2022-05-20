@@ -30,7 +30,25 @@
         from
             seckill_spu
     </select>
+    <!--  查询正在秒杀的商品列表  -->
+    <select id="selectSeckillSpusInTime" resultMap="BaseResultMap">
+        select
+            <include refid="SimpleField" />
+        from
+            seckill_spu
+        where
+            start_time &lt; #{time}
+        and
+            end_time &gt; #{time}
+    </select>
 
+    <!--   查询所有秒杀商品列表的spuId   -->
+    <select id="selectAllSeckillSpuIds" resultType="long">
+        select
+            spu_id
+        from
+            seckill_spu
+    </select>
 
 
 
