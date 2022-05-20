@@ -11,5 +11,27 @@
         <result column="gmt_create" property="gmtCreate" />
         <result column="gmt_modified" property="gmtModified" />
     </resultMap>
+    <!-- 声明当前表各列名称 -->
+    <sql id="SimpleField">
+        <if test="true">
+            id,
+            spu_id,
+            list_price,
+            start_time,
+            end_time,
+            gmt_create,
+            gmt_modified
+        </if>
+    </sql>
+    <!--   查询秒杀列表spu   -->
+    <select id="selectSeckillSpus" resultMap="BaseResultMap">
+        select
+            <include refid="SimpleField" />
+        from
+            seckill_spu
+    </select>
+
+
+
 
 </mapper>
