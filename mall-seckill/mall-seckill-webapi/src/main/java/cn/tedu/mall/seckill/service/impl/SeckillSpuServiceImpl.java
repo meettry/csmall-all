@@ -1,6 +1,8 @@
 package cn.tedu.mall.seckill.service.impl;
 
+import cn.tedu.mall.common.exception.CoolSharkServiceException;
 import cn.tedu.mall.common.restful.JsonPage;
+import cn.tedu.mall.common.restful.ResponseCode;
 import cn.tedu.mall.pojo.product.vo.SpuStandardVO;
 import cn.tedu.mall.pojo.seckill.model.SeckillSpu;
 import cn.tedu.mall.pojo.seckill.vo.SeckillSpuDetailSimpleVO;
@@ -9,17 +11,23 @@ import cn.tedu.mall.product.service.seckill.IForSeckillSkuService;
 import cn.tedu.mall.product.service.seckill.IForSeckillSpuService;
 import cn.tedu.mall.seckill.mapper.SeckillSpuMapper;
 import cn.tedu.mall.seckill.service.ISeckillSpuService;
+import cn.tedu.mall.seckill.utils.RedisBloomUtils;
+import cn.tedu.mall.seckill.utils.SeckillCacheUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -62,8 +70,62 @@ public class SeckillSpuServiceImpl implements ISeckillSpuService {
         return JsonPage.restPage(new PageInfo<>(seckillSpuVOs));
     }
 
+    // 添加操作Redis的注入
+    @Autowired
+    private RedisTemplate redisTemplate;
+    // 添加布隆过滤器的注入
+    @Autowired
+    private RedisBloomUtils redisBloomUtils;
+
+    // 根据SpuId查询Spu信息,需要考虑各种秒杀业务特征
     @Override
     public SeckillSpuVO getSeckillSpu(Long spuId) {
+        // 获取当前批次的布隆过滤器的key
+        String bloomFilterKey= SeckillCacheUtils.getBloomFilterKey(LocalDate.now());
+        log.info("当前批次布隆过滤器的key值为:{}",bloomFilterKey);
+        // 用户要查询的SpuId是否在布隆过滤器中
+        boolean exists=redisBloomUtils.bfexists(bloomFilterKey,spuId+"");
+        if(!exists){
+            // 如果布隆过滤器中没有要查询的spuId
+            throw new CoolSharkServiceException(ResponseCode.NOT_FOUND,"您访问的商品不存在");
+        }
+        // 布隆过滤器判断spu数据存在,准备查询
+        // 实例化SeckillSpuVO用于最终返回
+        SeckillSpuVO seckillSpuVO=null;
+        // 判断Redis中是否包含SpuId为当前Id的seckillSpuVO对象
+        // 先确定SpuId对应的Key
+        String seckillSpuVOKey=SeckillCacheUtils.getSeckillSpuVOKey(spuId);
+        // "mall:seckill:spu:vo:2"
+        // 执行判断
+        if(redisTemplate.hasKey(seckillSpuVOKey)){
+            // 如果Redis中包含当前SpuId的对象,直接返回即可
+            seckillSpuVO=(SeckillSpuVO) redisTemplate.boundValueOps(seckillSpuVOKey).get();
+        }else{
+            // 如果Redis中没有这个SpuId对应的对象,就需要到数据库查询然后保存到Redis
+            // 先查询秒杀spu表中基本信息
+            SeckillSpu seckillSpu=seckillSpuMapper.selectSeckillSpuBySpuId(spuId);
+            // 因为布隆过滤器判断有的数据不一定有,所以在这里判断查询结果是否为空
+            if(seckillSpu==null){
+                // 进入这个if,表示真的是误判数据,抛出异常
+                throw new CoolSharkServiceException(ResponseCode.NOT_FOUND,
+                        "您访问的商品不存在(布隆过滤器误判)");
+            }
+            // 根据dubbo查询pms表中当前spuId的常规信息
+            SpuStandardVO spuStandardVO=dubboSeckillSpuService.getSpuById(spuId);
+            // 实例化seckillSpuVO对象
+            seckillSpuVO=new SeckillSpuVO();
+            // 开始向SeckillSpuVO对象中赋值,它包含秒杀spu和常规spu的所有信息
+            // 常规Spu赋值
+            BeanUtils.copyProperties(spuStandardVO,seckillSpuVO);
+            // 给SeckillSpuVO赋值秒杀相关属性值
+            seckillSpuVO.setSeckillListPrice(seckillSpu.getListPrice());
+            seckillSpuVO.setStartTime(seckillSpu.getStartTime());
+            seckillSpuVO.setEndTime(seckillSpu.getEndTime());
+            // seckillSpuVO信息全了 下面要保存到Redis中,以便再查询这个spu直接从Redis中获取
+            redisTemplate.boundValueOps(seckillSpuVOKey).set(seckillSpuVO,
+                    1000*60*60*72+ RandomUtils.nextInt(1000*60*60*2), TimeUnit.MILLISECONDS);
+        }
+
         return null;
     }
 

@@ -50,6 +50,15 @@
             seckill_spu
     </select>
 
+    <!-- 根据SpuId查询秒杀商品spu信息 -->
+    <select id="selectSeckillSpuBySpuId" resultMap="BaseResultMap">
+        select
+            <include refid="SimpleField" />
+        from
+            seckill_spu
+        where
+            spu_id=#{spuId}
+    </select>
 
 
 </mapper>
