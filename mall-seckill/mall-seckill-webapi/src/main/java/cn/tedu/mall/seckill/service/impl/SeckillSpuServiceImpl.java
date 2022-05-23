@@ -3,6 +3,7 @@ package cn.tedu.mall.seckill.service.impl;
 import cn.tedu.mall.common.exception.CoolSharkServiceException;
 import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.common.restful.ResponseCode;
+import cn.tedu.mall.pojo.product.vo.SpuDetailStandardVO;
 import cn.tedu.mall.pojo.product.vo.SpuStandardVO;
 import cn.tedu.mall.pojo.seckill.model.SeckillSpu;
 import cn.tedu.mall.pojo.seckill.vo.SeckillSpuDetailSimpleVO;
@@ -145,8 +146,38 @@ public class SeckillSpuServiceImpl implements ISeckillSpuService {
         return seckillSpuVO;
     }
 
+    // 定义Redis中保存SpuDetail的key前缀
+    private static final String SECKILL_SPU_DETAIL_VO_PREFIX="seckill:spu:detail:vo:";
+    // 根据SpuId查询SpuDetail详情
     @Override
     public SeckillSpuDetailSimpleVO getSeckillSpuDetail(Long spuId) {
-        return null;
+        // 先获得当前SpuId对应detal详情的key
+        String seckillSpuDetailVOKey=SECKILL_SPU_DETAIL_VO_PREFIX+spuId;
+        // 声明SeckillSpuDetailSimpleVO类型对象,赋值null
+        SeckillSpuDetailSimpleVO seckillSpuDetailSimpleVO=null;
+        // 判断Redis中是否包含这个key
+        if(redisTemplate.hasKey(seckillSpuDetailVOKey)){
+            seckillSpuDetailSimpleVO=(SeckillSpuDetailSimpleVO)redisTemplate
+                    .boundValueOps(seckillSpuDetailVOKey).get();
+        }else{
+            // Redis中没有这个数据,就要到数据库中查询
+            // 借助Dubbo提供的方法到pms数据库中按spuId查询spu_detail
+            SpuDetailStandardVO spuDetailStandardVO=
+                dubboSeckillSpuService.getSpuDetailById(spuId);
+            // 判断spuId查询出的对象不能为空
+            if(spuDetailStandardVO==null){
+                throw new CoolSharkServiceException(ResponseCode.NOT_FOUND,"您访问的商品不存在");
+            }
+            // 商品存在,开始进行数据封装,先实例化对象
+            seckillSpuDetailSimpleVO=new SeckillSpuDetailSimpleVO();
+            // 相同属性赋值
+            BeanUtils.copyProperties(spuDetailStandardVO,seckillSpuDetailSimpleVO);
+            // 将查询出的detail数据保存到Redis,以便后面访问
+            redisTemplate.boundValueOps(seckillSpuDetailVOKey).set(
+                    seckillSpuDetailSimpleVO,
+                    1000*60*60*72+RandomUtils.nextInt(1000*60*60*2),
+                    TimeUnit.MILLISECONDS);
+        }
+        return seckillSpuDetailSimpleVO;
     }
 }
