@@ -2,6 +2,7 @@ package cn.tedu.mall.seckill.controller;
 
 import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.common.restful.JsonResult;
+import cn.tedu.mall.pojo.product.vo.SpuStandardVO;
 import cn.tedu.mall.pojo.seckill.vo.SeckillSpuVO;
 import cn.tedu.mall.seckill.service.ISeckillSpuService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +34,21 @@ public class SeckillSpuController {
         JsonPage<SeckillSpuVO> spuVOJsonPage=seckillSpuService.listSeckillSpus(page,pageSize);
         return JsonResult.ok(spuVOJsonPage);
     }
+
+    // 根据SpuId查询Spu信息
+    @GetMapping("/{spuId}")
+    @ApiOperation("根据SpuId查询Spu信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "Spu Id",name="spuId",required = true,dataType = "int")
+    })
+    public JsonResult<SeckillSpuVO> getSeckillSpu(
+                                    @PathVariable Long spuId){
+        SeckillSpuVO seckillSpuVO=seckillSpuService.getSeckillSpu(spuId);
+        return JsonResult.ok(seckillSpuVO);
+    }
+
+
+
 
 
 }

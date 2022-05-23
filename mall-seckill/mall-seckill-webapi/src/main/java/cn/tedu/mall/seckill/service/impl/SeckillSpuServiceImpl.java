@@ -24,7 +24,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -125,8 +127,22 @@ public class SeckillSpuServiceImpl implements ISeckillSpuService {
             redisTemplate.boundValueOps(seckillSpuVOKey).set(seckillSpuVO,
                     1000*60*60*72+ RandomUtils.nextInt(1000*60*60*2), TimeUnit.MILLISECONDS);
         }
-
-        return null;
+        // 判断当前时间是否在这个商品的秒杀时间内
+        // 获得当前时间
+        LocalDateTime nowTime=LocalDateTime.now();
+        // 判断当前时间是否在开始时间之后
+        Duration afterStart=Duration.between(nowTime,seckillSpuVO.getStartTime());
+        // 判断结束时间是否在当前时间之后
+        Duration beforeEnd=Duration.between(seckillSpuVO.getEndTime(),nowTime);
+        if(afterStart.isNegative() && beforeEnd.isNegative()){
+            // 如果当前商品确实在秒杀时间段内
+            // 我们将Redis中该商品对应的随机码添加到seckillSpuVO的url属性里
+            String randCodeKey=SeckillCacheUtils.getRandCodeKey(spuId);
+            seckillSpuVO.setUrl(
+                    "/seckill/"+redisTemplate.boundValueOps(randCodeKey).get());
+        }
+        // 别忘了返回
+        return seckillSpuVO;
     }
 
     @Override
