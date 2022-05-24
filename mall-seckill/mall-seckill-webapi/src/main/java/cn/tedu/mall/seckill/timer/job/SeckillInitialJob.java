@@ -84,5 +84,8 @@ public class SeckillInitialJob implements Job {
                 redisTemplate.boundValueOps(randomCodeKey).set(randCode,1,TimeUnit.DAYS);
             }
         }
+        String randomCodeKey=SeckillCacheUtils.getRandCodeKey(2L);
+        System.out.println(redisTemplate.boundValueOps(randomCodeKey).get()+"-------------------------------------");
+
     }
 }
