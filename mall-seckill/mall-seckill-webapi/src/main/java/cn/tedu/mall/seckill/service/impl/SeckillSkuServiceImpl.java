@@ -49,6 +49,7 @@ public class SeckillSkuServiceImpl implements ISeckillSkuService {
                 // 如果Redis中没有对应的key
                 // 先查询常规sku表中的信息
                 SkuStandardVO skuStandardVO=dubboSkuService.getById(skuId);
+                System.out.println(skuStandardVO);
                 // 实例化seckillSkuVO
                 seckillSkuVO=new SeckillSkuVO();
                 // 将常规表中信息赋值给seckillSkuVO
