@@ -34,5 +34,14 @@
         where
             spu_id=#{spuId}
     </select>
+    <!-- 根据skuid修改数量quantity  -->
+    <update id="updateStockBySkuId">
+        update
+            seckill_sku
+        set
+            seckill_stock=#{quantity}
+        where
+            sku_id=#{skuId}
+    </update>
 
 </mapper>

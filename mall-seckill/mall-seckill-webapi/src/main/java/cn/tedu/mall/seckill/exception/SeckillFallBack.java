@@ -16,6 +16,6 @@ public class SeckillFallBack {
            SeckillOrderAddDTO seckillOrderAddDTO,Throwable throwable){
         log.error("秒杀业务降级!");
         return JsonResult.failed(ResponseCode.INTERNAL_SERVER_ERROR,
-                "服务器内部错误,请稍后再试");
+                throwable.getMessage());
     }
 }
