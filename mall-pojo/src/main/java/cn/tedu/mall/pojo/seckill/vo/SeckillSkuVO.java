@@ -64,7 +64,6 @@ public class SeckillSkuVO implements Serializable {
      * 组图URLs，使用JSON格式表示
      */
     @ApiModelProperty(value = "组图URLs，使用JSON格式表示")
-    @JsonRawValue
     private String pictures;
 
     /**
