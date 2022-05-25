@@ -12,6 +12,6 @@ public interface SeckillSkuMapper {
     List<SeckillSku> selectSeckillSkusBySpuId(Long spuId);
 
     // 根据skuid修改库存数
-    void updateStockBySkuId(@Param("skuId") Long skuId,
+    void updateReduceStockBySkuId(@Param("skuId") Long skuId,
                             @Param("quantity") Integer quantity);
 }
