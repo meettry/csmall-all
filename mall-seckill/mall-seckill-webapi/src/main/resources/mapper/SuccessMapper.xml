@@ -38,7 +38,7 @@
                  #{skuId},
                  #{title},
                  #{mainPicture},
-                 #{secskillPrice},
+                 #{seckillPrice},
                  #{quantity},
                  #{barCode},
                  #{data},
