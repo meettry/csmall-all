@@ -11,54 +11,7 @@
         <result column="gmt_create" property="gmtCreate" />
         <result column="gmt_modified" property="gmtModified" />
     </resultMap>
-    <!-- 声明当前表各列名称 -->
-    <sql id="SimpleField">
-        <if test="true">
-            id,
-            spu_id,
-            list_price,
-            start_time,
-            end_time,
-            gmt_create,
-            gmt_modified
-        </if>
-    </sql>
-    <!--   查询秒杀列表spu   -->
-    <select id="selectSeckillSpus" resultMap="BaseResultMap">
-        select
-            <include refid="SimpleField" />
-        from
-            seckill_spu
-    </select>
-    <!--  查询正在秒杀的商品列表  -->
-    <select id="selectSeckillSpusInTime" resultMap="BaseResultMap">
-        select
-            <include refid="SimpleField" />
-        from
-            seckill_spu
-        where
-            start_time &lt; #{time}
-        and
-            end_time &gt; #{time}
-    </select>
 
-    <!--   查询所有秒杀商品列表的spuId   -->
-    <select id="selectAllSeckillSpuIds" resultType="long">
-        select
-            spu_id
-        from
-            seckill_spu
-    </select>
-
-    <!-- 根据SpuId查询秒杀商品spu信息 -->
-    <select id="selectSeckillSpuBySpuId" resultMap="BaseResultMap">
-        select
-            <include refid="SimpleField" />
-        from
-            seckill_spu
-        where
-            spu_id=#{spuId}
-    </select>
 
 
 </mapper>

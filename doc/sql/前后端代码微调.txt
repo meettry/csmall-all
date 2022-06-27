@@ -1,0 +1,18 @@
+前端
+Detail.vue
+loadCurrentSpuDetail方法末尾约309行
+// 加载规格默认数据
+this.sku.price = this.spuDetailInfo.listPrice;
+this.goods.picture=this.spuDetailInfo.pictureUrls[0];
+
+后端
+SkuStandardVO类
+60行
+/**
+* 组图URLs，使用JSON格式表示
+*/
+@ApiModelProperty(value = "组图URL", position = 8)
+//@JsonRawValue
+private String pictures;
+
+

@@ -1,7 +1,6 @@
 my:
   server:
-    addr: 192.168.137.150
-    #addr: 106.75.107.221
+    addr: localhost
 spring:
   datasource:
     url: jdbc:mysql://${my.server.addr}:3306/mall_seckill?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
