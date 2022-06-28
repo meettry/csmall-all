@@ -1,5 +1,7 @@
 package cn.tedu.mall.front.service.impl;
 
+import cn.tedu.mall.common.exception.CoolSharkServiceException;
+import cn.tedu.mall.common.restful.ResponseCode;
 import cn.tedu.mall.front.service.IFrontCategoryService;
 import cn.tedu.mall.pojo.front.entity.FrontCategoryEntity;
 import cn.tedu.mall.pojo.front.vo.FrontCategoryTreeVO;
@@ -8,10 +10,12 @@ import cn.tedu.mall.product.service.front.IForFrontCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +65,44 @@ public class FrontCategoryServiceImpl implements IFrontCategoryService {
         log.info("当前分类对象总数:{}",categoryStandardVOs.size());
         // 下面编写for循环,遍历categoryStandardVOs集合,将其中的所有元素保存到父分类id值对应的Map中
         // 根分类parentId是0
-
-
+        for(CategoryStandardVO categoryStandardVO : categoryStandardVOs){
+            // 因为CategoryStandardVO类型中没有children属性保存子分类对象
+            // 所以我们要使用FrontCategoryEntity来保存同名属性
+            FrontCategoryEntity frontCategoryEntity=new FrontCategoryEntity();
+            // 利用BeanUtils将categoryStandardVO同名属性赋值给frontCategoryEntity
+            BeanUtils.copyProperties(categoryStandardVO,frontCategoryEntity);
+            // 提取当前分类对象的父级id(parentId)
+            Long parentId=frontCategoryEntity.getParentId();
+            // 判断当前的父级Id是否在Map中已经存在
+            if(!map.containsKey(parentId)){
+                // 如果parentId是第一次出现,就要向map中添加一个元素
+                List<FrontCategoryEntity> value=new ArrayList<>();
+                value.add(frontCategoryEntity);
+                map.put(parentId,value);
+            }else{
+                // 如果当前以parentId值作为key的map元素已经存在,
+                // 我们就向当前map元素的List集合中添加当前分类对象即可
+                map.get(parentId).add(frontCategoryEntity);
+            }
+        }
+        log.info("当前map中包含父级id的个数为:{}",map.size());
         // 第二部分,将每个分类对象关联到正确父分类对象中
+        // 我们已经获得了每个父分类包含了内些子分类的数据
+        // 下面就可以从根分类开始,通过循环遍历将每个分类对象包含的子分类添加到children属性中
+        // 因为根分类id为0,所以先key为0的获取
+        List<FrontCategoryEntity> firstLevels=map.get(0L);
+        //判断根分类是否为null
+        if(firstLevels==null){
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"当前项目没有根分类");
+        }
+        // 首先遍历我们从Map中获取的所有根分类
+        for(FrontCategoryEntity oneLevel: firstLevels){
+            // 获得当前根分类对象的id
+            Long secondLevelParentId=oneLevel.getId();
+
+        }
+
+        return null;
 
     }
 
