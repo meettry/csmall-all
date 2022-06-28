@@ -99,10 +99,36 @@ public class FrontCategoryServiceImpl implements IFrontCategoryService {
         for(FrontCategoryEntity oneLevel: firstLevels){
             // 获得当前根分类对象的id
             Long secondLevelParentId=oneLevel.getId();
-
+            // map中获取当前分类对象的所有子分类的集合
+            List<FrontCategoryEntity> secondLevels=map.get(secondLevelParentId);
+            // 判断二级分类是否为null
+            if(secondLevels==null){
+                log.warn("当前分类缺少二级分类内容:{}",secondLevelParentId);
+                // 为了防止空集合遍历发生异常,我们直接跳过本次循环,运行下次循环
+                continue;
+            }
+            // 遍历当前根分类的所有二级分类
+            for(FrontCategoryEntity twoLevel : secondLevels){
+                // 获得当前二级分类对象id,作为三级分类的父id保存
+                Long thirdLevelParentId = twoLevel.getId();
+                // 获得当前二级分类的所有子元素
+                List<FrontCategoryEntity> thirdLevels=map.get(thirdLevelParentId);
+                if(thirdLevels==null){
+                    log.warn("当前分类缺少三级分类内容:{}",thirdLevelParentId);
+                    continue;
+                }
+                // 将三级分类对象集合赋值给二级分类对象的children属性
+                twoLevel.setChildrens(thirdLevels);
+            }
+            // 将二级分类对象集合赋值给一级分类对象的children属性
+            oneLevel.setChildrens(secondLevels);
         }
-
-        return null;
+        // 将转换完成的所有一级分类对象,按方法要求返回
+        FrontCategoryTreeVO<FrontCategoryEntity> treeVO=new FrontCategoryTreeVO<>();
+        // 向对象中属性赋值
+        treeVO.setCategories(firstLevels);
+        // 别忘了修改返回treeVO
+        return treeVO;
 
     }
 
