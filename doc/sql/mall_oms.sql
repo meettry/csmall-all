@@ -1,4 +1,4 @@
-CREATE DATABASE `mall_oms`
+CREATE DATABASE `mall_oms`;
 
 USE `mall_oms`;
 

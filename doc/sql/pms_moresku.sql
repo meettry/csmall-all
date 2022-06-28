@@ -7,7 +7,7 @@
 
 -- 导出 mall_pms 的数据库结构
 DROP DATABASE IF EXISTS `mall_pms`;
-CREATE DATABASE IF NOT EXISTS `mall_pms`
+CREATE DATABASE IF NOT EXISTS `mall_pms`;
 USE `mall_pms`;
 
 -- 导出  表 mall_pms.pms_album 结构
