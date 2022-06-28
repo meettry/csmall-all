@@ -1,18 +1,4 @@
-/*
-SQLyog Community v13.1.6 (64 bit)
-MySQL - 8.0.28 : Database - mall_oms
-*********************************************************************
-*/
-
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`mall_oms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE `mall_oms`
 
 USE `mall_oms`;
 
@@ -22,17 +8,17 @@ USE `mall_oms`;
 DROP TABLE IF EXISTS `oms_cart`;
 
 CREATE TABLE `oms_cart` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
-  `sku_id` bigint unsigned DEFAULT NULL COMMENT 'SKU id',
-  `title` varchar(255) DEFAULT NULL COMMENT '商品SKU标题（冗余）',
-  `main_picture` varchar(255) DEFAULT NULL COMMENT '商品SKU图片URL（第1张）（冗余）',
-  `price` decimal(10,2) DEFAULT NULL COMMENT '商品SKU单价（加入时）',
-  `quantity` smallint unsigned DEFAULT NULL COMMENT '商品SKU购买数量',
-  `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
-  `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='购物车数据表';
+                            `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+                            `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
+                            `sku_id` bigint unsigned DEFAULT NULL COMMENT 'SKU id',
+                            `title` varchar(255) DEFAULT NULL COMMENT '商品SKU标题（冗余）',
+                            `main_picture` varchar(255) DEFAULT NULL COMMENT '商品SKU图片URL（第1张）（冗余）',
+                            `price` decimal(10,2) DEFAULT NULL COMMENT '商品SKU单价（加入时）',
+                            `quantity` smallint unsigned DEFAULT NULL COMMENT '商品SKU购买数量',
+                            `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
+                            `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
+                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4  COMMENT='购物车数据表';
 
 /*Data for the table `oms_cart` */
 
@@ -41,36 +27,36 @@ CREATE TABLE `oms_cart` (
 DROP TABLE IF EXISTS `oms_order`;
 
 CREATE TABLE `oms_order` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `sn` varchar(50) DEFAULT NULL COMMENT '订单编号',
-  `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
-  `contact_name` varchar(50) DEFAULT NULL COMMENT '联系人姓名（冗余，历史）',
-  `mobile_phone` varchar(50) DEFAULT NULL COMMENT '联系电话（冗余，历史）',
-  `telephone` varchar(50) DEFAULT NULL COMMENT '固定电话（冗余，历史）',
-  `province_code` varchar(50) DEFAULT NULL COMMENT '省-代号（冗余，历史）',
-  `province_name` varchar(50) DEFAULT NULL COMMENT '省-名称（冗余，历史）',
-  `city_code` varchar(50) DEFAULT NULL COMMENT '市-代号（冗余，历史）',
-  `city_name` varchar(50) DEFAULT NULL COMMENT '市-名称（冗余，历史）',
-  `district_code` varchar(50) DEFAULT NULL COMMENT '区-代号（冗余，历史）',
-  `district_name` varchar(50) DEFAULT NULL COMMENT '区-名称（冗余，历史）',
-  `street_code` varchar(50) DEFAULT NULL COMMENT '街道-代号（冗余，历史）',
-  `street_name` varchar(50) DEFAULT NULL COMMENT '街道-名称（冗余，历史）',
-  `detailed_address` varchar(255) DEFAULT NULL COMMENT '详细地址（冗余，历史）',
-  `tag` varchar(50) DEFAULT NULL COMMENT '标签（冗余，历史），例如：家、公司、学校',
-  `payment_type` tinyint unsigned DEFAULT NULL COMMENT '支付方式，0=银联，1=微信，2=支付宝',
-  `state` tinyint unsigned DEFAULT '0' COMMENT '状态，0=未支付，1=已关闭（超时未支付），2=已取消，3=已支付，4=已签收，5=已拒收，6=退款处理中，7=已退款',
-  `reward_point` int unsigned DEFAULT '0' COMMENT '积分',
-  `amount_of_original_price` decimal(10,2) DEFAULT NULL COMMENT '商品原总价',
-  `amount_of_freight` decimal(10,2) DEFAULT NULL COMMENT '运费总价',
-  `amount_of_discount` decimal(10,2) DEFAULT NULL COMMENT '优惠金额',
-  `amount_of_actual_pay` decimal(10,2) DEFAULT NULL COMMENT '实际支付',
-  `gmt_order` datetime DEFAULT NULL COMMENT '下单时间',
-  `gmt_pay` datetime DEFAULT NULL COMMENT '支付时间',
-  `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
-  `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `sn` (`sn`)
-) ENGINE=InnoDB AUTO_INCREMENT=5012 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单数据表';
+                             `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+                             `sn` varchar(50) DEFAULT NULL COMMENT '订单编号',
+                             `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
+                             `contact_name` varchar(50) DEFAULT NULL COMMENT '联系人姓名（冗余，历史）',
+                             `mobile_phone` varchar(50) DEFAULT NULL COMMENT '联系电话（冗余，历史）',
+                             `telephone` varchar(50) DEFAULT NULL COMMENT '固定电话（冗余，历史）',
+                             `province_code` varchar(50) DEFAULT NULL COMMENT '省-代号（冗余，历史）',
+                             `province_name` varchar(50) DEFAULT NULL COMMENT '省-名称（冗余，历史）',
+                             `city_code` varchar(50) DEFAULT NULL COMMENT '市-代号（冗余，历史）',
+                             `city_name` varchar(50) DEFAULT NULL COMMENT '市-名称（冗余，历史）',
+                             `district_code` varchar(50) DEFAULT NULL COMMENT '区-代号（冗余，历史）',
+                             `district_name` varchar(50) DEFAULT NULL COMMENT '区-名称（冗余，历史）',
+                             `street_code` varchar(50) DEFAULT NULL COMMENT '街道-代号（冗余，历史）',
+                             `street_name` varchar(50) DEFAULT NULL COMMENT '街道-名称（冗余，历史）',
+                             `detailed_address` varchar(255) DEFAULT NULL COMMENT '详细地址（冗余，历史）',
+                             `tag` varchar(50) DEFAULT NULL COMMENT '标签（冗余，历史），例如：家、公司、学校',
+                             `payment_type` tinyint unsigned DEFAULT NULL COMMENT '支付方式，0=银联，1=微信，2=支付宝',
+                             `state` tinyint unsigned DEFAULT '0' COMMENT '状态，0=未支付，1=已关闭（超时未支付），2=已取消，3=已支付，4=已签收，5=已拒收，6=退款处理中，7=已退款',
+                             `reward_point` int unsigned DEFAULT '0' COMMENT '积分',
+                             `amount_of_original_price` decimal(10,2) DEFAULT NULL COMMENT '商品原总价',
+                             `amount_of_freight` decimal(10,2) DEFAULT NULL COMMENT '运费总价',
+                             `amount_of_discount` decimal(10,2) DEFAULT NULL COMMENT '优惠金额',
+                             `amount_of_actual_pay` decimal(10,2) DEFAULT NULL COMMENT '实际支付',
+                             `gmt_order` datetime DEFAULT NULL COMMENT '下单时间',
+                             `gmt_pay` datetime DEFAULT NULL COMMENT '支付时间',
+                             `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
+                             `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
+                             PRIMARY KEY (`id`),
+                             UNIQUE KEY `sn` (`sn`)
+) ENGINE=InnoDB AUTO_INCREMENT=5012 DEFAULT CHARSET=utf8mb4  COMMENT='订单数据表';
 
 /*Data for the table `oms_order` */
 
@@ -82,19 +68,19 @@ insert  into `oms_order`(`id`,`sn`,`user_id`,`contact_name`,`mobile_phone`,`tele
 DROP TABLE IF EXISTS `oms_order_item`;
 
 CREATE TABLE `oms_order_item` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` bigint unsigned DEFAULT NULL COMMENT '订单id',
-  `sku_id` bigint unsigned DEFAULT NULL COMMENT 'SKU id',
-  `title` varchar(255) DEFAULT NULL COMMENT '商品SKU标题（冗余，历史）',
-  `bar_code` varchar(255) DEFAULT NULL COMMENT '商品SKU商品条型码（冗余）',
-  `data` varchar(2500) DEFAULT NULL COMMENT '商品SKU全部属性，使用JSON格式表示（冗余）',
-  `main_picture` varchar(255) DEFAULT NULL COMMENT '商品SKU图片URL（第1张）（冗余）',
-  `price` decimal(10,2) DEFAULT NULL COMMENT '商品SKU单价（冗余，历史）',
-  `quantity` smallint unsigned DEFAULT NULL COMMENT '商品SKU购买数量',
-  `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
-  `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5011 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单商品数据表';
+                                  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+                                  `order_id` bigint unsigned DEFAULT NULL COMMENT '订单id',
+                                  `sku_id` bigint unsigned DEFAULT NULL COMMENT 'SKU id',
+                                  `title` varchar(255) DEFAULT NULL COMMENT '商品SKU标题（冗余，历史）',
+                                  `bar_code` varchar(255) DEFAULT NULL COMMENT '商品SKU商品条型码（冗余）',
+                                  `data` varchar(2500) DEFAULT NULL COMMENT '商品SKU全部属性，使用JSON格式表示（冗余）',
+                                  `main_picture` varchar(255) DEFAULT NULL COMMENT '商品SKU图片URL（第1张）（冗余）',
+                                  `price` decimal(10,2) DEFAULT NULL COMMENT '商品SKU单价（冗余，历史）',
+                                  `quantity` smallint unsigned DEFAULT NULL COMMENT '商品SKU购买数量',
+                                  `gmt_create` datetime DEFAULT NULL COMMENT '数据创建时间',
+                                  `gmt_modified` datetime DEFAULT NULL COMMENT '数据最后修改时间',
+                                  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5011 DEFAULT CHARSET=utf8mb4  COMMENT='订单商品数据表';
 
 /*Data for the table `oms_order_item` */
 
@@ -110,14 +96,14 @@ insert  into `oms_order_item`(`id`,`order_id`,`sku_id`,`title`,`bar_code`,`data`
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 CREATE TABLE `undo_log` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `branch_id` bigint NOT NULL,
-  `xid` varchar(100) NOT NULL,
-  `context` varchar(128) NOT NULL,
-  `rollback_info` longblob NOT NULL,
-  `log_status` int NOT NULL,
-  `log_created` datetime NOT NULL,
-  `log_modified` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
+                            `id` bigint NOT NULL AUTO_INCREMENT,
+                            `branch_id` bigint NOT NULL,
+                            `xid` varchar(100) NOT NULL,
+                            `context` varchar(128) NOT NULL,
+                            `rollback_info` longblob NOT NULL,
+                            `log_status` int NOT NULL,
+                            `log_created` datetime NOT NULL,
+                            `log_modified` datetime NOT NULL,
+                            PRIMARY KEY (`id`),
+                            UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb3
