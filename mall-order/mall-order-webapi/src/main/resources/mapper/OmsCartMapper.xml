@@ -41,9 +41,34 @@
         and
             sku_id=#{skuId}
     </select>
+    <!-- 新增购物车信息 -->
+    <insert id="saveCart" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_cart(
+            user_id,
+            sku_id,
+            title,
+            main_picture,
+            price,
+            quantity
+        ) values(
+            #{userId},
+            #{skuId},
+            #{title},
+            #{mainPicture},
+            #{price},
+            #{quantity}
+        )
+    </insert>
+    <!--  根据购物车id修改数量  -->
+    <update id="updateQuantityById" >
+        update
+            oms_cart
+        set
+            quantity=#{quantity}
+        where
+            id=#{id}
 
-
-
+    </update>
 
 </mapper>
 
