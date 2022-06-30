@@ -10,12 +10,16 @@ import cn.tedu.mall.pojo.order.dto.CartAddDTO;
 import cn.tedu.mall.pojo.order.dto.CartUpdateDTO;
 import cn.tedu.mall.pojo.order.model.OmsCart;
 import cn.tedu.mall.pojo.order.vo.CartStandardVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OmsCartServiceImpl implements IOmsCartService {
@@ -49,9 +53,17 @@ public class OmsCartServiceImpl implements IOmsCartService {
         }
     }
 
+    // 根据用户id分页查询当前用户的购物车列表
     @Override
     public JsonPage<CartStandardVO> listCarts(Integer page, Integer pageSize) {
-        return null;
+        // 获得用户id
+        Long userId=getUserId();
+        // 执行查询前设置分页条件
+        PageHelper.startPage(page,pageSize);
+        // 执行分页查询
+        List<CartStandardVO> list=omsCartMapper.selectCartsByUserId(userId);
+        // 实例化PageInfo对象获得分页信息后将它转换为JsonPage返回
+        return JsonPage.restPage(new PageInfo<>(list));
     }
 
     @Override
