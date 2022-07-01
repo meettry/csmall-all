@@ -10,9 +10,11 @@ import cn.tedu.mall.order.service.IOmsCartService;
 import cn.tedu.mall.order.service.IOmsOrderService;
 import cn.tedu.mall.order.utils.IdGeneratorUtils;
 import cn.tedu.mall.pojo.order.dto.OrderAddDTO;
+import cn.tedu.mall.pojo.order.dto.OrderItemAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderListTimeDTO;
 import cn.tedu.mall.pojo.order.dto.OrderStateUpdateDTO;
 import cn.tedu.mall.pojo.order.model.OmsOrder;
+import cn.tedu.mall.pojo.order.model.OmsOrderItem;
 import cn.tedu.mall.pojo.order.vo.OrderAddVO;
 import cn.tedu.mall.pojo.order.vo.OrderDetailVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @DubboService
@@ -58,14 +62,51 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         // orderAddDTO中数据并不全面,我们需要更详细的信息才能新增订单
         // 因为收集信息代码较多,单独编写一个方法实现
         loadOrder(omsOrder);
-
-
         // 2.遍历订单中包含的所有商品的集合,也保证所有属性被赋值OmsOrderItem
+        // 获得orderAddDTO对象中的所有商品sku集合,判断是否为空
+        List<OrderItemAddDTO> orderItemAddDTOs=orderAddDTO.getOrderItems();
+        if(orderItemAddDTOs==null || orderItemAddDTOs.isEmpty()){
+            // 如果为null或集合中没有元素,抛出异常,终止新增订单
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"订单中必须有商品");
+        }
+        // 我们的目标是将订单中的商品增到oms_order_item表中
+        // 我们持有的持久层方法参数是List<OmsOrderItem>
+        // 我们先在获得的是List<OrderItemAddDTO>,类型不一致,
+        // 我们需要讲OrderItemAddDTO转换成OmsOrderItem,保存到一个新的集合里
+        List<OmsOrderItem> omsOrderItems=new ArrayList<>();
+        // 遍历参数中包含的所有商品列表
+        for(OrderItemAddDTO addDTO: orderItemAddDTOs){
+            // 先是转换我们的OrderItemAddDTO为OmsOrderItem
+            OmsOrderItem orderItem=new OmsOrderItem();
+            // 同名属性赋值
+            BeanUtils.copyProperties(addDTO,orderItem);
+            // 和Order一样OrderItem也有属性要单独复制
+            loadOrderItem(orderItem);
+            // 根据上面方法获得的omsOrder的订单id,给当前订单项的订单id属性赋值
+            orderItem.setOrderId(omsOrder.getId());
+            // 到此为止,我们的订单和循环遍历的订单中的订单项都已经赋好值,下面就要开始进行数据库操作了!
+
+        }
+
+
         // 3.遍历中所有值被赋值后,修改集合中所有商品的库存,并从购物车中删除这些商品
         // 4.将订单信息新增到数据(包括OrderItem和Order)
 
         return null;
     }
+
+    private void loadOrderItem(OmsOrderItem orderItem) {
+        if(orderItem.getId()==null){
+            Long id=IdGeneratorUtils.getDistributeId("order_item");
+            orderItem.setId(id);
+        }
+        // 必须包含skuid信息,才能确定商品信息
+        if(orderItem.getSkuId()==null){
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,
+                                            "订单中商品必须包含skuId");
+        }
+    }
+
 
     // 新增订单业务中需要的收集Order信息的方法
     private void loadOrder(OmsOrder omsOrder) {
@@ -109,6 +150,19 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         if(omsOrder.getAmountOfDiscount()==null){
             omsOrder.setAmountOfDiscount(new BigDecimal(0.0));
         }
+        // 获取传递过来的原价信息,如果原价为空,抛出异常
+        if(omsOrder.getAmountOfOriginalPrice()==null){
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"没有提供订单原价");
+        }
+        // 计算实际支付金额
+        // 原价+运费-优惠=最终价格
+        BigDecimal originalPrice=omsOrder.getAmountOfOriginalPrice();
+        BigDecimal freight=omsOrder.getAmountOfFreight();
+        BigDecimal discount=omsOrder.getAmountOfDiscount();
+        BigDecimal actualPay=originalPrice.add(freight).subtract(discount);
+        // 赋值给实际支付属性
+        omsOrder.setAmountOfActualPay(actualPay);
+
 
     }
 
