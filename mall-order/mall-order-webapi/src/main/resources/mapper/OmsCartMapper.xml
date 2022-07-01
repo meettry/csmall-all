@@ -93,6 +93,24 @@
         </foreach>
     </delete>
 
+    <!-- 删除当前用户购物车中所有内容  -->
+    <delete id="deleteCartsByUserId">
+        delete from
+            oms_cart
+        where
+            user_id=#{userId}
+    </delete>
+
+    <!--  根据userId和skuId删除购物车中商品   -->
+    <delete id="deleteCartByUserIdAndSkuId">
+        delete from
+            oms_cart
+        where
+            user_id=#{userId}
+        and
+            sku_id=#{skuId}
+    </delete>
+
 
 </mapper>
 

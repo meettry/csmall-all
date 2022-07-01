@@ -77,19 +77,32 @@ public class OmsCartServiceImpl implements IOmsCartService {
         }
     }
 
+    // 清空当前登录用户购物车
     @Override
     public void removeAllCarts() {
-
+        Long userId=getUserId();
+        int rows=omsCartMapper.deleteCartsByUserId(userId);
+        if(rows==0){
+            throw new CoolSharkServiceException(ResponseCode.NOT_FOUND,"您的购物车中没有商品");
+        }
     }
 
+    // 生成订单时,删除购物车中信息的方法
     @Override
     public void removeUserCarts(OmsCart omsCart) {
-
+        // 根据omsCart的userId和skuId删除购物车信息
+        omsCartMapper.deleteCartByUserIdAndSkuId(omsCart);
     }
 
+    // 修改购物车商品数量的方法
     @Override
     public void updateQuantity(CartUpdateDTO cartUpdateDTO) {
-
+        // 持久层中已经包含了修改数量的方法,但是参数是OmsCart
+        // 将本方法的cartUpdateDTO参数值赋值给OmsCart再调用持久层方法即可
+        OmsCart omsCart=new OmsCart();
+        BeanUtils.copyProperties(cartUpdateDTO,omsCart);
+        // 调用持久层实施修改
+        omsCartMapper.updateQuantityById(omsCart);
     }
 
     // 业务逻辑层获得用户信息的方法,因为多个方法需要获得用户信息,所以单独编写一个方法
