@@ -82,6 +82,18 @@
             user_id=#{id}
     </select>
 
+    <!--  根据id删除购物车信息  -->
+    <delete id="deleteCartsByIds">
+        delete from
+            oms_cart
+        where
+            id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
 </mapper>
 
 

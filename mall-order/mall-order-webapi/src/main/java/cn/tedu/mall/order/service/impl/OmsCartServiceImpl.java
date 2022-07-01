@@ -66,9 +66,15 @@ public class OmsCartServiceImpl implements IOmsCartService {
         return JsonPage.restPage(new PageInfo<>(list));
     }
 
+    // 按ids数组中的id值删除cart表中信息
     @Override
     public void removeCart(Long[] ids) {
-
+        // 删除是包含返回值的
+        int rows=omsCartMapper.deleteCartsByIds(ids);
+        if(rows==0){
+            throw new CoolSharkServiceException(ResponseCode.NOT_FOUND,
+                    "购物车中没有您要删除的商品");
+        }
     }
 
     @Override
