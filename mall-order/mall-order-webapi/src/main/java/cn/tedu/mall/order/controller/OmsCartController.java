@@ -1,16 +1,19 @@
 package cn.tedu.mall.order.controller;
 
+import cn.tedu.mall.common.restful.JsonPage;
 import cn.tedu.mall.common.restful.JsonResult;
 import cn.tedu.mall.order.service.IOmsCartService;
+import cn.tedu.mall.order.utils.WebConsts;
 import cn.tedu.mall.pojo.order.dto.CartAddDTO;
+import cn.tedu.mall.pojo.order.vo.CartStandardVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/oms/cart")
@@ -32,5 +35,30 @@ public class OmsCartController {
         omsCartService.addCart(cartAddDTO);
         return JsonResult.ok("成功添加到购物车");
     }
+
+    // 分页查询当前用户购物车中的信息
+    @GetMapping("/list")
+    @ApiOperation("分页查询当前用户购物车中的信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "页码",name = "page",dataType = "int",example = "1"),
+            @ApiImplicitParam(value = "每页条数",name = "pageSize",
+                                        dataType = "int",example = "5")
+    })
+    @PreAuthorize("hasRole('ROLE_user')")
+    public JsonResult<JsonPage<CartStandardVO>> listCartByPage(
+            // 当控制器参数可能为空,当空时,我们要给它赋默认值时,可以用下面的格式
+            @RequestParam(required = false,defaultValue = WebConsts.DEFAULT_PAGE)
+                                                                        Integer page,
+            @RequestParam(required = false,defaultValue = WebConsts.DEFAULT_PAGE_SIZE)
+                                                                        Integer pageSize
+    ){
+        // 控制层调用业务逻辑层代码
+        JsonPage<CartStandardVO> jsonPage=omsCartService.listCarts(page,pageSize);
+        return JsonResult.ok(jsonPage);
+
+    }
+
+
+
 
 }
