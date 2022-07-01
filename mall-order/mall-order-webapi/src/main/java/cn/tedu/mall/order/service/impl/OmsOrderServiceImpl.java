@@ -13,6 +13,7 @@ import cn.tedu.mall.pojo.order.dto.OrderAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderItemAddDTO;
 import cn.tedu.mall.pojo.order.dto.OrderListTimeDTO;
 import cn.tedu.mall.pojo.order.dto.OrderStateUpdateDTO;
+import cn.tedu.mall.pojo.order.model.OmsCart;
 import cn.tedu.mall.pojo.order.model.OmsOrder;
 import cn.tedu.mall.pojo.order.model.OmsOrderItem;
 import cn.tedu.mall.pojo.order.vo.OrderAddVO;
@@ -85,14 +86,46 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
             // 根据上面方法获得的omsOrder的订单id,给当前订单项的订单id属性赋值
             orderItem.setOrderId(omsOrder.getId());
             // 到此为止,我们的订单和循环遍历的订单中的订单项都已经赋好值,下面就要开始进行数据库操作了!
-
+            // 将收集好信息的orderItem对象添加到omsOrderItems集合中
+            omsOrderItems.add(orderItem);
+            // 3.遍历中所有值被赋值后,修改集合中所有商品的库存,并从购物车中删除这些商品
+            // 减少库存数
+            // 获得skuId
+            Long skuId=orderItem.getSkuId();
+            // 获取减少的商品的数量
+            Integer quantity=orderItem.getQuantity();
+            // dubbo调用减少库存的方法
+            int rows=dubboSkuService.reduceStockNum(skuId,quantity);
+            // 如果rows值为0,表示这次修改没有修改任何行,一般因为库存不足导致的
+            if(rows==0){
+                log.warn("商品skuId:{},库存不足",skuId);
+                // 抛出异常,Seata组件可以另之前循环过程中已经新增到数据库的信息回滚
+                throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"库存不足");
+            }
+            // 删除购物车中商品
+            // 删除购物车商品的方法需要OmsCart实体类
+            OmsCart omsCart=new OmsCart();
+            omsCart.setSkuId(skuId);
+            omsCart.setUserId(omsOrder.getUserId());
+            cartService.removeUserCarts(omsCart);
         }
-
-
-        // 3.遍历中所有值被赋值后,修改集合中所有商品的库存,并从购物车中删除这些商品
         // 4.将订单信息新增到数据(包括OrderItem和Order)
+        // 新增OrderItem对象,利用mapper中批量新增的方法
+        orderItemMapper.insertOrderItems(omsOrderItems);
+        // 新增订单表
+        orderMapper.insertOrder(omsOrder);
 
-        return null;
+        // 最后要保证用户能够看到订单详情
+        // 我们不需要返回订单的所有信息,因为前端包含大部分订单信息
+        // 我们只需要返回后端生成的一些数据即可
+        // OrderAddVO完成这个功能
+        OrderAddVO addVO=new OrderAddVO();
+        addVO.setId(omsOrder.getId());
+        addVO.setSn(omsOrder.getSn());
+        addVO.setCreateTime(omsOrder.getGmtCreate());
+        addVO.setPayAmount(omsOrder.getAmountOfActualPay());
+        // 别忘了返回正确的对象
+        return addVO;
     }
 
     private void loadOrderItem(OmsOrderItem orderItem) {
