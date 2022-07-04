@@ -36,7 +36,7 @@ public class OrderAddDTO implements OrderRegExpression,Serializable {
      * 固定电话（冗余，历史）
      */
     @ApiModelProperty(value="固定电话",notes="冗余，历史",example = "010-88888888",required = true)
-    @Pattern(regexp = REGEXP_TELEPHONE,message = MESSAGE_TELEPHONE)
+    //@Pattern(regexp = REGEXP_TELEPHONE,message = MESSAGE_TELEPHONE)
     private String telephone;
 
     /**
