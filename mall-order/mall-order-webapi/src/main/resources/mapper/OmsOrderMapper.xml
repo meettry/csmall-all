@@ -94,5 +94,36 @@
                   )
     </insert>
 
+    <!--  当前用户指定时间范围内查询所有订单  -->
+    <select id="selectOrdersBetweenTimes" resultMap="">
+        SELECT
+        oo.id,
+        oo.sn,
+        oo.user_id,
+        oo.contact_name,
+        oo.state,
+        oo.amount_of_actual_pay,
+        oo.gmt_order,
+        oo.gmt_create,
+        oo.gmt_modified,
+        oo.gmt_pay,
+        ooi.id ooi_id,
+        ooi.order_id,
+        ooi.sku_id,
+        ooi.title,
+        ooi.main_picture,
+        ooi.price,
+        ooi.quantity
+        FROM oms_order oo
+        JOIN oms_order_item ooi ON oo.id=ooi.order_id
+        WHERE
+        oo.user_id=#{userId}
+        AND
+        oo.gmt_create &gt; #{startTime}
+        AND
+        oo.gmt_create &lt; #{endTime}
+        ORDER BY oo.gmt_modified DESC
+
+    </select>
 
 </mapper>

@@ -45,4 +45,4 @@ seata:
       default: ${my.server.addr}:8091
   client:
     undo:
-      log-serialization: jackson
+      log-serialization: kryo
