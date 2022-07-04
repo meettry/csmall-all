@@ -202,10 +202,22 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
 
     }
 
+    // 根据订单id 修改订单状态
     @Override
     public void updateOrderState(OrderStateUpdateDTO orderStateUpdateDTO) {
-
+        // 参数orderStateUpdateDTO包含订单id和状态码
+        // 我们修改订单的方法参数是OmsOrder,所以需要实例化这个类型对象并赋值
+        OmsOrder omsOrder=new OmsOrder();
+        BeanUtils.copyProperties(orderStateUpdateDTO,omsOrder);
+        // 指定修改订单的方法
+        // 因为现在OmsOrder中只有id和state属性,所以不会修改其他列
+        orderMapper.updateOrderById(omsOrder);
     }
+
+
+
+
+
 
     // 查询当前登录用户在指定时间范围内(默认一个月内)所有订单
     // 订单包含订单信息和订单项信息两个方面(xml的sql语句是关联查询)
