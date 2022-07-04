@@ -49,6 +49,7 @@ public class ServiceLocalServiceImpl implements ISearchService {
             spuRepository.saveAll(esSpus);
             i++;
             pages=spus.getTotalPage();
+            log.info("成功新增第{}页数据",i);
         }while (i<=pages);// 循环条件是当前页码不超过总页数
 
     }
