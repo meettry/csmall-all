@@ -20,6 +20,8 @@ import cn.tedu.mall.pojo.order.vo.OrderAddVO;
 import cn.tedu.mall.pojo.order.vo.OrderDetailVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
 import cn.tedu.mall.product.service.order.IForOrderSkuService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -204,9 +207,50 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
 
     }
 
+    // 查询当前登录用户在指定时间范围内(默认一个月内)所有订单
+    // 订单包含订单信息和订单项信息两个方面(xml的sql语句是关联查询)
     @Override
     public JsonPage<OrderListVO> listOrdersBetweenTimes(OrderListTimeDTO orderListTimeDTO) {
-        return null;
+        // 因为默认为最近一个月内,如果没有起始和结束时间,需要我们自动添加
+        // 要检查起始时间和结束时间是否合理,我们单独编写方法校验上面业务
+        validaTimeAndLoadTimes(orderListTimeDTO);
+        // 时间验证通过,开始进程查询
+        // 获得当前用户id
+        Long userId=getUserId();
+        // 将userId赋值给参数
+        orderListTimeDTO.setUserId(userId);
+        // 设置分页条件
+        PageHelper.startPage(orderListTimeDTO.getPage(),orderListTimeDTO.getPageSize());
+        // 执行查询
+        List<OrderListVO> list=orderMapper.selectOrdersBetweenTimes(orderListTimeDTO);
+        // 别忘了返回
+        return JsonPage.restPage(new PageInfo<>(list));
+
+    }
+
+    private void validaTimeAndLoadTimes(OrderListTimeDTO orderListTimeDTO) {
+        // 取出起始和结束时间对象
+        LocalDateTime start=orderListTimeDTO.getStartTime();
+        LocalDateTime end=orderListTimeDTO.getEndTime();
+        // 如果start和end中有任何一个为null,默认查询一个月内
+        if(start==null || end==null){
+            // 起始时间是当前时间减一个月minusMonths就是减月份的意思,1就是一个月
+            start=LocalDateTime.now().minusMonths(1);
+            // 默认结束时间是当前时间
+            end=LocalDateTime.now();
+            // 赋值给orderListTimeDTO参数
+            orderListTimeDTO.setStartTime(start);
+            orderListTimeDTO.setEndTime(end);
+        }else{
+            // 如果是国际的时间判断,需要添加时区修正来判断时间
+            // 判断结束时间大于起始时间,否则发生异常
+            if(end.toInstant(ZoneOffset.of("+8")).toEpochMilli()<
+                start.toInstant(ZoneOffset.of("+8")).toEpochMilli()){
+                throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,
+                        "结束时间应该大于起始时间");
+            }
+        }
+
     }
 
     @Override
