@@ -1,5 +1,7 @@
 package cn.tedu.mall.search.test;
 
+import cn.tedu.mall.pojo.search.entity.SpuForElastic;
+import cn.tedu.mall.search.repository.SpuForElasticRepository;
 import cn.tedu.mall.search.service.ISearchService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,5 +18,18 @@ public class TestSearch {
         searchService.loadSpuByPage();
         System.out.println("ok");
     }
+
+    @Autowired
+    private SpuForElasticRepository elasticRepository;
+
+    @Test
+    void getAll(){
+        Iterable<SpuForElastic> es=elasticRepository.findAll();
+        es.forEach(e-> System.out.println(e));
+
+    }
+
+
+
 
 }
