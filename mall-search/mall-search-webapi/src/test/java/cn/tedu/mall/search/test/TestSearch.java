@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.xml.bind.SchemaOutputResolver;
+
 @SpringBootTest
 public class TestSearch {
 
@@ -27,6 +29,13 @@ public class TestSearch {
         Iterable<SpuForElastic> es=elasticRepository.findAll();
         es.forEach(e-> System.out.println(e));
 
+    }
+
+    @Test
+    void getSpu(){
+        Iterable<SpuForElastic> it=elasticRepository
+                        .querySpuForElasticsByTitleMatches("手机");
+        it.forEach(e-> System.out.println(e));
     }
 
 
