@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -55,7 +57,22 @@ public class ServiceLocalServiceImpl implements ISearchService {
     }
 
     @Override
-    public JsonPage<SpuEntity> search(String keyword, Integer page, Integer pageSize) {
-        return null;
+    public JsonPage<SpuForElastic> search(String keyword, Integer page, Integer pageSize) {
+        // SpringData分页,参数0表示第一页,需要将page-1才能查询正确页码
+        Page<SpuForElastic> spus=spuRepository.querySearch(
+                            keyword, PageRequest.of(page-1,pageSize));
+        // 业务逻辑层要求返回JsonPage类型,我们目前最简单的办法就是实例化JsonPage对象给它赋值
+        JsonPage<SpuForElastic> jsonPage=new JsonPage<>();
+        // 当前页码
+        jsonPage.setPage(page);
+        jsonPage.setPageSize(pageSize);
+        // 赋值总页数
+        jsonPage.setTotalPage(spus.getTotalPages());
+        // 赋值总条数
+        jsonPage.setTotal(spus.getTotalElements());
+        // 赋值分页数据
+        jsonPage.setList(spus.getContent());
+        // 别忘了返回JsonPage!!!
+        return jsonPage;
     }
 }
