@@ -22,7 +22,7 @@ public interface SpuForElasticRepository extends
             "        ]\n" +
             "     }\n" +
             "}")
-
+    Iterable<SpuForElastic> querySearch(String keyword);
 
 
 
