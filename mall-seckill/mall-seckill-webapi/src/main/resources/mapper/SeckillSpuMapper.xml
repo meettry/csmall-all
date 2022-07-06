@@ -24,14 +24,27 @@
         </if>
     </sql>
     <!--  查询秒杀商品列表spu的方法   -->
-    <select id="findSeckillSpus" resultType="cn.tedu.mall.pojo.seckill.model.SeckillSpu">
+    <select id="findSeckillSpus"
+                        resultType="cn.tedu.mall.pojo.seckill.model.SeckillSpu">
         select
             <include refid="SimpleField" />
         from
             seckill_spu
     </select>
-
-
-
-
+    <!--  根据给定时间查询秒杀商品列表  -->
+    <select id="findSeckillSpusByTime"
+                         resultType="cn.tedu.mall.pojo.seckill.model.SeckillSpu">
+        select
+            <include refid="SimpleField" />
+        from
+            seckill_spu
+        where
+            start_time &lt; #{time}
+        and
+            end_time &gt; #{time}
+    </select>
+    <!--  查询所有SpuId   -->
+    <select id="findAllSeckillSpuIds" resultType="long">
+        select spu_id from seckill_spu
+    </select>
 </mapper>
