@@ -9,8 +9,10 @@ import cn.tedu.mall.product.service.seckill.IForSeckillSpuService;
 import cn.tedu.mall.seckill.mapper.SeckillSpuMapper;
 import cn.tedu.mall.seckill.service.ISeckillSpuService;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +45,21 @@ public class SeckillSpuServiceImpl implements ISeckillSpuService {
             Long spuId=seckillSpu.getSpuId();
             // dubbo调用查询商品详情
             SpuStandardVO spuStandardVO=dubboSeckillSpuService.getSpuById(spuId);
+            // 实例化包含秒杀信息和商品信息的对象
+            SeckillSpuVO seckillSpuVO=new SeckillSpuVO();
+            // 将商品详情信息赋值给同名属性
+            BeanUtils.copyProperties(spuStandardVO,seckillSpuVO);
+            // 为了防止已有的值被意外覆盖,我们剩下的属性单独赋值
+            // 赋值秒杀价
+            seckillSpuVO.setSeckillListPrice(seckillSpu.getListPrice());
+            // 赋值秒杀的开始时间和结束时间
+            seckillSpuVO.setStartTime(seckillSpu.getStartTime());
+            seckillSpuVO.setEndTime(seckillSpu.getEndTime());
+            // 将包含商品详情和秒杀信息的seckillSpuVO对象保存在循环前定义的集合中
+            seckillSpuVOs.add(seckillSpuVO);
         }
-
-        return null;
+        // 翻页返回查询结果
+        return JsonPage.restPage(new PageInfo<>(seckillSpuVOs));
     }
 
     @Override
