@@ -79,11 +79,29 @@ public class SeckillInitialJob implements Job {
                                     TimeUnit.SECONDS);
                     log.info("成功为{}号商品添加库存",sku.getSkuId());
                 }
-
+            }
+            // 仍然在遍历所有Spu对象的集合中
+            // 将当前Spu包含所有sku保存到Redis之后
+            // 我们要为Spu生成随机码
+            // 无论任何请求都是访问控制器的路径,秒杀购买商品也是
+            // 正常情况下我们输入的路径中,包含要购买商品的id即可
+            // 例如 /seckill/spu/,如果这个商品的id已经暴露,
+            // 那么就可能有人在秒杀未开始前就访问这个路径
+            // 如果不断访问,数据库就需要反复查询这个商品是否在秒杀时间段内,反复查询数据库影响性能
+            // 我们要防止这个事情,就要做到秒杀购买商品的路径,平时就不存在
+            // 而在秒杀开始5分钟前,生成随机码,有了随机码,购买秒杀商品的路径才出现
+            // 我们的随机码生成后也是保存在Redis中
+            // 获得随机码key
+            String randomCodeKey=SeckillCacheUtils.getRandCodeKey(spu.getSpuId());
+            // 判断随机码是否已经生成过
+            // 如果没有生成过再生成
+            if(!redisTemplate.hasKey(randomCodeKey)){
+                // 生成随机数,随机数越大越不好猜
+                int randCode=ran.nextInt(900000)+100000;
+                redisTemplate.boundValueOps(randomCodeKey)
+                        .set(randCode,1,TimeUnit.DAYS);
+                log.info("spuId为{}的商品随机码为{}",spu.getSpuId(),randCode);
             }
         }
-
-
-
     }
 }
