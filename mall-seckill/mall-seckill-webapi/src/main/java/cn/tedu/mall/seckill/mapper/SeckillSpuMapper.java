@@ -18,6 +18,8 @@ public interface SeckillSpuMapper {
     // 查询所有秒杀商品的SpuId数据
     Long[] findAllSeckillSpuIds();
 
+    // 根据SpuId查询秒杀Spu实体
+    SeckillSpu findSeckillSpuById(Long spuId);
 
 
 

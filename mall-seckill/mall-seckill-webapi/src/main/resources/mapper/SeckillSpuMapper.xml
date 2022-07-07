@@ -47,4 +47,15 @@
     <select id="findAllSeckillSpuIds" resultType="long">
         select spu_id from seckill_spu
     </select>
+    <!--  根据SpuId查询秒杀Spu实体  -->
+    <select id="findSeckillSpuById" resultMap="BaseResultMap">
+        select
+            <include refid="SimpleField" />
+        from
+            seckill_spu
+        where
+            spu_id=#{spuId}
+    </select>
+
+
 </mapper>
