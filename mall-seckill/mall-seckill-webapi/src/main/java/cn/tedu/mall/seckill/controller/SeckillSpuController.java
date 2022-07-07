@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/seckill/spu")
@@ -45,6 +46,15 @@ public class SeckillSpuController {
     }
 
 
+    @GetMapping("/{spuId}")
+    @ApiOperation("根据SpuId查询秒杀Spu详情")
+    @ApiImplicitParam(value = "spuId",name="spuId",required = true,
+                        dataType = "long",example = "2")
+    public JsonResult<SeckillSpuVO> getSeckillSpuVO(
+            @PathVariable Long spuId){
+        SeckillSpuVO seckillSpuVO=seckillSpuService.getSeckillSpu(spuId);
+        return JsonResult.ok(seckillSpuVO);
+    }
 
 
 
