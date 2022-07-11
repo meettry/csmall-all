@@ -70,7 +70,7 @@ public class SeckillServiceImpl implements ISeckillService {
         // 最后将这个数值返回给seckillTimes
         Long seckillTimes=stringRedisTemplate
                                 .boundValueOps(reSeckillKey).increment();
-        if(seckillTimes>1){
+        if(seckillTimes>100){
             // 购买次数超过1,证明不是第一次购买,抛出异常,终止业务
             throw new CoolSharkServiceException(
                             ResponseCode.FORBIDDEN,"您已经购买过该商品");
@@ -84,10 +84,10 @@ public class SeckillServiceImpl implements ISeckillService {
                         .boundValueOps(seckillSkuCountKey).decrement(1);
         // leftStock表示当前用户购买完之后剩余的库存数
         // 如果是0表示次用户购买完库存为0,所以只有返回值小于0时才是没有库存了
-        if(leftStock<0){
+        /*if(leftStock<0){
             throw new CoolSharkServiceException(ResponseCode.NOT_ACCEPTABLE,
                                             "对不起您购买的商品已经无货");
-        }
+        }*/
         // 运行到此处,表示用户可以生成订单,进入第二阶段
         // 第二阶段 开始生成订单秒杀订单转换成普通订单
         // 我们现获得的秒杀订单参数seckillOrderAddDTO
