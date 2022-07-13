@@ -24,7 +24,7 @@ public class TestSearch {
     @Autowired
     private SpuForElasticRepository elasticRepository;
 
-    @Test
+   /* @Test
     void getAll(){
         Iterable<SpuForElastic> es=elasticRepository.findAll();
         es.forEach(e-> System.out.println(e));
@@ -44,7 +44,7 @@ public class TestSearch {
         it.forEach(e-> System.out.println(e));
     }
 
-
+*/
 
 
 }
