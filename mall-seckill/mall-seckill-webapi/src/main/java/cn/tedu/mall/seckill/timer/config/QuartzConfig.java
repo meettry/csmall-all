@@ -1,5 +1,6 @@
 package cn.tedu.mall.seckill.timer.config;
 
+import cn.tedu.mall.seckill.timer.job.SeckillBloomInitialJob;
 import cn.tedu.mall.seckill.timer.job.SeckillInitialJob;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.common.recycler.Recycler;
@@ -35,6 +36,31 @@ public class QuartzConfig {
                 .withSchedule(cronScheduleBuilder)
                 .build();
     }
+
+    // 布隆过滤器的注册
+    @Bean
+    public JobDetail seckillBloomInitialJobDetail(){
+        log.info("加载布隆过滤器");
+        return JobBuilder.newJob(SeckillBloomInitialJob.class)
+                .withIdentity("SeckillBloomInitial")
+                .storeDurably()
+                .build();
+    }
+    // 布隆过滤器的触发器
+    @Bean
+    public Trigger seckillBloomInitialTrigger(){
+        log.info("加载布隆过滤器触发器");
+        // 实际开发需要修改这个Cron表达式为实际需求的设计,这里也是每分钟运行,方便测试
+        CronScheduleBuilder cronScheduleBuilder=
+                CronScheduleBuilder.cronSchedule("0 0/1 * * * ?");
+        return TriggerBuilder.newTrigger()
+                .forJob(seckillBloomInitialJobDetail())
+                .withIdentity("seckillBloomInitialTrigger")
+                .withSchedule(cronScheduleBuilder)
+                .build();
+    }
+
+
 
 
 
