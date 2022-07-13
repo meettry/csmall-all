@@ -18,18 +18,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-@Slf4j
-public class ServiceLocalServiceImpl implements ISearchService {
-    @Override
-    public JsonPage<SpuForElastic> search(String keyword, Integer page, Integer pageSize) {
-        return null;
-    }
+//@Service
+//@Slf4j
+@Deprecated
+public class ServiceLocalServiceImpl {
 
-    @Override
-    public void loadSpuByPage() {
-
-    }
 /*
     @DubboReference // Dubbo消费模块
     private IForFrontSpuService dubboSpuService;

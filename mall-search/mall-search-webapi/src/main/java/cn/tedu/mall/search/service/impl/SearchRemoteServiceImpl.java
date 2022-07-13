@@ -22,12 +22,21 @@ public class SearchRemoteServiceImpl implements ISearchService {
     @Autowired
     private SpuForElasticRepository spuForElasticRepository;
     @Override
-    public JsonPage<SpuForElastic> search(String keyword, Integer page, Integer pageSize) {
+    public JsonPage<SpuEntity> search(String keyword, Integer page, Integer pageSize) {
         Page<SpuEntity> spuEntities=spuForElasticRepository
                 .querySearchByText(keyword, PageRequest.of(page-1,pageSize));
         JsonPage<SpuEntity> jsonPage=new JsonPage<>();
-
-        return null;
+        //赋值分页参数
+        jsonPage.setPage(page);
+        jsonPage.setPageSize(pageSize);
+        // 总页数
+        jsonPage.setTotalPage(spuEntities.getTotalPages());
+        // 总条数
+        jsonPage.setTotal(spuEntities.getTotalElements());
+        // 赋值数据
+        jsonPage.setList(spuEntities.getContent());
+        // 别忘了返回jsonPage
+        return jsonPage;
     }
 
     @Override
