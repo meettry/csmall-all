@@ -135,6 +135,11 @@
             <groupId>io.seata</groupId>
             <artifactId>seata-serializer-kryo</artifactId>
         </dependency>
+        <!--  支持SpringAop注解的依赖   -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
