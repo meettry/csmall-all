@@ -1,6 +1,6 @@
 my:
   server:
-    addr: 192.168.137.150
+    addr: localhost
 spring:
   application:
     name: mall-search
