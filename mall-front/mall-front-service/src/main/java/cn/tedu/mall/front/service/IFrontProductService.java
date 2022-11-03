@@ -27,6 +27,11 @@ public interface IFrontProductService {
      */
     SpuStandardVO getFrontSpuById(Long id);
 
+    /**
+     * 根据spuId查询对应的sku列表
+     * @param spuId
+     * @return
+     */
     List<SkuStandardVO> getFrontSkusBySpuId(Long spuId);
 
     /**

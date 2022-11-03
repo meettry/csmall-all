@@ -26,7 +26,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-core:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:5.3.9" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: com.github.pagehelper:pagehelper-spring-boot-starter:1.4.0" level="project" />
@@ -55,5 +54,11 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.45" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-security:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.9" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:5.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:5.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:5.5.2" level="project" />
   </component>
 </module>

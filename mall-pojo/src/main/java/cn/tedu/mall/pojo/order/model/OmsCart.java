@@ -56,9 +56,6 @@ public class OmsCart implements Serializable {
      */
 
     private Integer quantity;
-    /**
-     * sku条形码
-     */
 
     /**
      * 数据创建时间

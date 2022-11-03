@@ -33,6 +33,67 @@
         <result column="gmt_modified" property="gmtModified" />
     </resultMap>
 
+    <!--    int insertOrder(OmsOrder omsOrder);-->
+    <insert id="insertOrder" >
+        insert into oms_order(
+            id,
+            sn,
+            user_id,
+            contact_name,
+            mobile_phone,
+            telephone,
+            province_code,
+            province_name,
+            city_code,
+            city_name,
+            district_code,
+            district_name,
+            street_code,
+            street_name,
+            detailed_address,
+            tag,
+            payment_type,
+            state,
+            reward_point,
+            amount_of_original_price,
+            amount_of_freight,
+            amount_of_discount,
+            amount_of_actual_pay,
+            gmt_pay,
+            gmt_order,
+            gmt_create,
+            gmt_modified
+        ) values (
+                     #{id},
+                     #{sn},
+                     #{userId},
+                     #{contactName},
+                     #{mobilePhone},
+                     #{telephone},
+                     #{provinceCode},
+                     #{provinceName},
+                     #{cityCode},
+                     #{cityName},
+                     #{districtCode},
+                     #{districtName},
+                     #{streetCode},
+                     #{streetName},
+                     #{detailedAddress},
+                     #{tag},
+                     #{paymentType},
+                     #{state},
+                     #{rewardPoint},
+                     #{amountOfOriginalPrice},
+                     #{amountOfFreight},
+                     #{amountOfDiscount},
+                     #{amountOfActualPay},
+                     #{gmtPay},
+                     #{gmtOrder},
+                     #{gmtCreate},
+                     #{gmtModified}
+                 )
+    </insert>
+
 
 
 

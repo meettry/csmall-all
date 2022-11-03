@@ -21,7 +21,7 @@ mybatis:
     - classpath:mapper/*.xml
   configuration:
     cache-enabled: false
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 jwt:
   # JWT存储的请求头

@@ -18,6 +18,7 @@
         <module>mall-ams</module>
         <module>mall-pojo</module>
         <module>mall-resource</module>
+
         <module>mall-product</module>
         <module>mall-ums</module>
         <module>mall-front</module>
