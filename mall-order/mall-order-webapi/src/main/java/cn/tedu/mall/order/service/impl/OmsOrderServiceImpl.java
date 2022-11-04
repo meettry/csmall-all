@@ -20,6 +20,8 @@ import cn.tedu.mall.pojo.order.vo.OrderAddVO;
 import cn.tedu.mall.pojo.order.vo.OrderDetailVO;
 import cn.tedu.mall.pojo.order.vo.OrderListVO;
 import cn.tedu.mall.product.service.order.IForOrderSkuService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +58,12 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
     @Autowired
     private OmsOrderItemMapper omsOrderItemMapper;
 
+    /**
+     * 添加订单
+     *
+     * @param orderAddDTO
+     * @return
+     */
     @GlobalTransactional
     @Override
     // 这个方法dubbo调用了Product模块的方法,操作了数据库,有分布式事务的需求
@@ -64,7 +73,7 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         // 实例化OmsOrder对象
         OmsOrder order = new OmsOrder();
         // 当前方法参数orderAddDTO有很多order需要的同名属性,直接赋值接口
-        BeanUtils.copyProperties(orderAddDTO,order);
+        BeanUtils.copyProperties(orderAddDTO, order);
         // orderAddDTO中属性比order要少,缺少的属性要我们自己赋值生成
         // 可以编写一个专门的方法来进行数据的收集
         loadOrder(order);
@@ -74,13 +83,13 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
         List<OrderItemAddDTO> orderItemAddDTOs = orderAddDTO.getOrderItems();
         if (orderItemAddDTOs == null || orderItemAddDTOs.isEmpty()) {
             // 订单中没有商品,无法生成订单
-            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"订单中必须至少包含一件商品");
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST, "订单中必须至少包含一件商品");
         }
         // 将集合泛型OrderItemAddDTO转换为OmsOrderItem
         List<OmsOrderItem> omsOrderItems = new ArrayList<>();
         for (OrderItemAddDTO orderItemAddDTO : orderItemAddDTOs) {
             OmsOrderItem omsOrderItem = new OmsOrderItem();
-            BeanUtils.copyProperties(orderItemAddDTO,omsOrderItem);
+            BeanUtils.copyProperties(orderItemAddDTO, omsOrderItem);
             // 将orderItemAddDTO没有的id与orderId属性赋值给omsOrderItem
             omsOrderItem.setOrderId(order.getId());
             Long itemId = IdGeneratorUtils.getDistributeId("order_item");
@@ -89,18 +98,18 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
             omsOrderItems.add(omsOrderItem);
 
             // 第二部分:执行操作数据库的指令
-            // 减少库存,删除购物车,加订单,加订单项
+            // 几个步骤:减少库存,删除购物车,加订单,加订单项
             // 当前循环是订单中的一件商品,我们可以在此处对这个商品进行库存的减少
             // 当前对象属性中是包含skuId和要购买的商品数量的,所以可以执行库存的修改
             // 1.减少库存
             // 先获取skuId
-            Long skuId=omsOrderItem.getSkuId();
+            Long skuId = omsOrderItem.getSkuId();
             // 修改库存是Dubbo调用的
-            int rows=dubboSkuService.reduceStockNum(
-                    skuId,omsOrderItem.getQuantity());
+            int rows = dubboSkuService.reduceStockNum(
+                    skuId, omsOrderItem.getQuantity());
             // 判断rows(数据库受影响的行数)的值
-            if(rows==0){
-                log.warn("商品库存不足,skuId:{}",skuId);
+            if (rows == 0) {
+                log.warn("商品库存不足,skuId:{}", skuId);
                 // 库存不足不能继续生成订单,抛出异常,终止事务进行回滚
                 throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,
                         "库存不足!");
@@ -131,6 +140,7 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
 
     /**
      * 为order对象补全属性值的方法
+     *
      * @param order
      */
     private void loadOrder(OmsOrder order) {
@@ -176,9 +186,44 @@ public class OmsOrderServiceImpl implements IOmsOrderService {
 
     }
 
+    /**
+     * 分页查询当前登录用户,指定时间范围内的所有订单
+     * 默认查询最近一个月的订单信息,查询的返回值为OrderListVO,是包含订单信息和订单商品信息的对象
+     * 查询依赖了持久层编写好的映射关系,xml文件中编写的关联查询
+     * @param orderListTimeDTO
+     * @return
+     */
     @Override
     public JsonPage<OrderListVO> listOrdersBetweenTimes(OrderListTimeDTO orderListTimeDTO) {
-        return null;
+        // 业务逻辑层首先判断给定的时间范围,为空默认最近一个月
+        // 如果不为空要保证结束时间大于开始时间,可以专门写一个方法
+        validateTimeAndLocalTime(orderListTimeDTO);
+
+        orderListTimeDTO.setUserId(UserInfo.getUserId());
+        // 分页查询设置分页条件
+        PageHelper.startPage(orderListTimeDTO.getPage(), orderListTimeDTO.getPageSize());
+        // 调用关联查询的方法,获得包含订单商品信息的订单合集
+        List<OrderListVO> orderListVOs = omsOrderMapper.selectOrdersBetweenTimes(orderListTimeDTO);
+        return JsonPage.restPage(new PageInfo<>(orderListVOs));
+    }
+
+    private void validateTimeAndLocalTime(OrderListTimeDTO orderListTimeDTO) {
+        // 获取开始和结束时间
+        LocalDateTime start = orderListTimeDTO.getStartTime();
+        LocalDateTime end = orderListTimeDTO.getEndTime();
+        // 为了让业务更加简单明了,将业务设计成,start和end任意一个为空就查询最近一个月的
+        // 订单,若开始时间大于结束时间则抛出异常
+        if (start == null || end == null) {
+            start = LocalDateTime.now().minusMonths(1);
+            end = LocalDateTime.now();
+            orderListTimeDTO.setStartTime(start);
+            orderListTimeDTO.setEndTime(end);
+        }
+        if (end.toInstant(ZoneOffset.of("+8")).toEpochMilli()
+                < start.toInstant(ZoneOffset.of("+8")).toEpochMilli()) {
+            // 如果判断表示结束时间小于开始时间,抛出异常
+            throw new CoolSharkServiceException(ResponseCode.BAD_REQUEST,"结束时间应大于起始时间");
+        }
     }
 
     @Override
